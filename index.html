@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fura System</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+  <section id="loginPage" class="login-page">
+    <header class="topbar">
+      <a class="brand" href="#"><i class="fa-solid fa-truck"></i><span>FURA SYSTEM</span></a>
+      <nav><a href="#safe">Xavfsiz yo‘l</a><a href="#movement">Barqaror harakat</a><a href="#contact">Siz bilan</a><button type="button" id="loginOwnerAccessBtn" class="login-owner-btn"><i class="fa-solid fa-user-shield"></i> OWNER</button></nav>
+    </header>
+    <div class="login-card">
+      <h1>FURA SYSTEM</h1>
+      <p class="subtitle">Avtomobilingizni boshqaring</p>
+      <form id="loginForm" class="auth-form">
+        <label for="truckNumber">Firma</label>
+        <input id="truckNumber" type="text" placeholder="Firma nomi" required autocomplete="username">
+        <label for="password">Firma paroli</label>
+        <input id="password" type="password" placeholder="Firma paroli" required minlength="4" autocomplete="current-password">
+        <button type="submit">Kirish <span>→</span></button>
+        <small class="login-hint">Faqat oldin akkaunt ochilgan mashina raqami va to‘g‘ri parol bilan kirish mumkin.</small>
+      </form>
+    </div>
+  </section>
+
+  <section id="dashboardPage" class="dashboard hidden">
+    <aside class="sidebar">
+      <a class="brand side-brand" href="#"><i class="fa-solid fa-truck"></i><span>FURA SYSTEM</span></a>
+      <div class="driver-card">
+        <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        <div><button id="vehiclePickerBtn" type="button" class="vehicle-picker-btn">Mashina tanlash ▾</button><small id="driverNumber">Fura haydovchisi</small></div>
+      </div>
+      <button class="menu-link active" data-view="home"><i class="fa-solid fa-house"></i> Asosiy joy</button>
+      <button class="menu-link" data-view="vehicle"><i class="fa-solid fa-truck-fast"></i> Mashina haqida ma’lumot</button>
+      <button class="menu-link" data-view="routes"><i class="fa-solid fa-route"></i> Yo‘nalishlar</button>
+      <button class="menu-link" data-view="repair"><i class="fa-solid fa-screwdriver-wrench"></i> Remont</button>
+      <button class="menu-link" data-view="expenses"><i class="fa-solid fa-wallet"></i> Xarajat</button>
+      <button class="menu-link" data-view="payments"><i class="fa-solid fa-money-check-dollar"></i> To‘lov</button>
+      <button class="menu-link" data-view="garage"><i class="fa-solid fa-warehouse"></i> Garaj</button>
+      <button class="menu-link" data-view="overall"><i class="fa-solid fa-chart-pie"></i> Obshiy rasxod</button>
+      <button class="menu-link" data-view="china"><i class="fa-solid fa-earth-asia"></i> Xitoy</button>
+      <button class="menu-link" data-view="history"><i class="fa-solid fa-clock-rotate-left"></i> Eski reyslar</button>
+      <button type="button" id="logoutBtn" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Chiqish</button>
+      <div class="sidebar-bottom"><i class="fa-solid fa-shield-halved"></i><span>Yo‘lingiz bexatar bo‘lsin!</span></div>
+    </aside>
+
+    <main class="main-content">
+      <div class="main-header">
+        <div><p class="eyebrow">TRANSPORT BOSHQARUVI</p><h1 id="pageTitle">Asosiy joy</h1></div>
+        <div class="header-actions"><label class="language-label" for="languageSelect">Til</label><select id="languageSelect" class="language-select"><option value="uz">O‘zbekcha</option><option value="ru">Русский</option><option value="kk">Қазақша</option><option value="zh">中文</option></select><div class="status"><span></span> Tizim faol</div></div>
+      </div>
+
+      <section id="homeView" class="view">
+        <div class="welcome-panel">
+          <div><p class="eyebrow">XUSH KELIBSIZ</p><h2>Yo‘lingizni rejalashtiring</h2><p>Osiyo bo‘ylab yuk tashish yo‘nalishlarini ko‘ring va safaringizni boshqaring.</p></div>
+          <i class="fa-solid fa-truck-moving hero-truck"></i>
+        </div>
+        <div class="stats">
+          <article class="stat-card"><span class="stat-icon blue"><i class="fa-solid fa-map-location-dot"></i></span><div><small>Yo‘nalishlar</small><strong>Osiyo bo‘ylab</strong></div></article>
+          <article class="stat-card"><span class="stat-icon red"><i class="fa-solid fa-location-dot"></i></span><div><small>Belgilangan manzillar</small><strong id="routeStatus">Hali belgilanmagan</strong></div></article>
+        </div>
+        <div class="workspace">
+          <section class="route-panel">
+            <div class="section-heading"><div><h3>Yo‘nalish xaritasi</h3><p>Shaharlarni kiriting va xaritada belgilang</p></div><span class="live-dot"></span></div>
+            <div class="map-frame"><div id="mapCanvas" role="application" aria-label="Osiyo yo‘nalish xaritasi"></div></div>
+            <div class="map-legend"><span><i class="legend-dot origin"></i> Boshlanish shahri</span><span><i class="legend-dot destination"></i> Borish shahri</span><a id="largeMapLink" href="https://www.openstreetmap.org/#map=4/42/85" target="_blank" rel="noreferrer">Katta xarita ↗</a></div>
+          </section>
+          <section class="route-form panel">
+            <div class="section-heading"><div><h3>Mashina haqida ma’lumot</h3><p>Qayerga ketayotganingizni kiriting</p></div><i class="fa-solid fa-location-crosshairs"></i></div>
+            <form id="routeForm">
+              <label for="fromCity">Qayerdan ketmoqda?</label><input id="fromCity" type="text" placeholder="Masalan: Toshkent" required>
+              <label for="toCity">Qayerga ketmoqda?</label><input id="toCity" type="text" placeholder="Masalan: Moskva" required>
+              <label for="cargoInfo">Yuk</label><textarea id="cargoInfo" rows="3" placeholder="Yuk turi yoki qo‘shimcha ma’lumot..."></textarea>
+              <button type="submit" class="primary-btn"><i class="fa-solid fa-route"></i> Yo‘nalishni ko‘rsatish</button>
+            </form>
+            <div id="routeMessage" class="route-message">Boshlanish va borish shaharlarini kiriting.</div>
+          </section>
+        </div>
+        <div class="home-cargo-box">
+            <article class="panel expense-card">
+              <div class="section-heading"><div><h3><i class="fa-solid fa-money-bill-transfer expense-green"></i> Yuk narxi</h3><p>Yuk tashish haqini qayd etish</p></div></div>
+              <form id="cargoForm" class="expense-form">
+                <label for="cargoPrice">Yuk narxi (pul)</label><div class="money-input-row"><input id="cargoPrice" type="number" min="0" step="0.01" placeholder="Masalan: 100" required><select id="cargoCurrency"><option value="USD">Dollar ($)</option><option value="UZS">So‘m</option><option value="CNY">Yuan</option><option value="KZT">Tenge</option><option value="RUB">Rubl</option></select></div><div id="cargoConversion" class="currency-preview">Dollar va so‘mdagi qiymat kurs asosida chiqadi.</div>
+                <label for="cargoFrom">Qayerdan?</label><input id="cargoFrom" type="text" placeholder="Jo‘natish shahri" required>
+                <label for="cargoTo">Qayerga?</label><input id="cargoTo" type="text" placeholder="Yetkazish shahri" required>
+                <label for="cargoDate">Sana</label><input id="cargoDate" type="date" required>
+                <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Yuk narxini saqlash</button>
+              </form>
+              <p id="cargoSaved" class="expense-feedback"></p>
+            </article>
+        </div>
+      </section>
+
+      <section id="vehicleView" class="view hidden">
+        <div class="panel details-panel"><div class="section-heading"><div><h3>Mashina haqida ma’lumot</h3><p>Avtomobil va safar ma’lumotlarini kiriting</p></div><i class="fa-solid fa-truck-fast"></i></div>
+          <div class="vehicle-number"><i class="fa-solid fa-truck"></i><div><small>Avtomobil raqami</small><strong id="vehicleNumberDisplay">—</strong></div></div>
+          <form id="vehicleForm"><label for="vehicleModel">Mashina modeli</label><input id="vehicleModel" placeholder="Masalan: MAN TGX">
+          <label for="vehiclePlate">Davlat raqami</label><input id="vehiclePlate" placeholder="01 A 123 AA">
+          <label for="vehicleNote">Qo‘shimcha ma’lumot</label><textarea id="vehicleNote" rows="4" placeholder="Mashina, yuk yoki safar haqida yozing..."></textarea>
+          <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Ma’lumotni saqlash</button></form>
+          <p id="vehicleSaved" class="route-message"></p>
+        </div>
+      </section>
+      <section id="routesView" class="view hidden"><div class="panel details-panel"><div class="section-heading"><div><h3>Yo‘nalishlar</h3><p>Siz kiritgan so‘nggi yo‘nalish</p></div><i class="fa-solid fa-route"></i></div><div id="savedRoute" class="saved-route">Hozircha yo‘nalish kiritilmagan.</div><div id="routeCargoPrice" class="saved-route"></div><button class="primary-btn" id="backToMap"><i class="fa-solid fa-map"></i> Xarita va asosiy joyga qaytish</button></div></section>
+      <section id="repairView" class="view hidden">
+        <div class="panel details-panel repair-page">
+          <div class="section-heading"><div><h3>Remont va texnik xizmat</h3><p>Har bir garajda smaskani almashtirgan sanani yangilang</p></div><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="repair-cards">
+          <article id="kalodCard" class="smaska-card kalod-card">
+            <div class="smaska-title"><span class="smaska-icon"><i class="fa-solid fa-gear"></i></span><div><h2>Kalodka</h2><p>Muddatini o‘zingiz belgilang</p></div><span id="kalodBadge" class="smaska-badge">Nazoratda</span></div>
+            <div class="smaska-dates"><div><small>Almashtirilgan sana</small><strong id="kalodChanged">—</strong></div><div><small>Tugash sanasi</small><strong id="kalodDue">—</strong></div><div class="days-left"><small>Qolgan vaqt</small><strong id="kalodRemaining">—</strong></div></div>
+            <form id="kalodForm" class="smaska-form"><label for="kalodDate">Almashtirilgan sana</label><input id="kalodDate" type="date" required><label for="kalodDays">Muddati (kun)</label><input id="kalodDays" type="number" min="1" max="1000" placeholder="Masalan: 30" required><label for="kalodPrice">Narxi ($)</label><input id="kalodPrice" type="number" min="0" step="0.01" value="0"><button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Kalodka muddatini saqlash</button></form>
+          </article>
+          <article id="aftolCard" class="smaska-card">
+            <div class="smaska-title"><span class="smaska-icon"><i class="fa-solid fa-filter"></i></span><div><h2>Aftol</h2><p>Muddatini o‘zingiz belgilang</p></div><span id="aftolBadge" class="smaska-badge">Nazoratda</span></div>
+            <div class="aftol-addons"><table><thead><tr><th>Filter / qo‘shimcha</th><th>Narxi ($)</th></tr></thead><tbody><tr><td>Maslo filter</td><td><input id="aftolMasloFilter" type="number" min="0" step="0.01" value="18"></td></tr><tr><td>Solyarka filter</td><td><input id="aftolSolyarkaFilter" type="number" min="0" step="0.01" value="22"></td></tr><tr><td>Stistolniy</td><td><input id="aftolStistolniy" type="number" min="0" step="0.01" value="14"></td></tr></tbody></table></div>
+            <div class="smaska-dates"><div><small>Almashtirilgan sana</small><strong id="aftolChanged">—</strong></div><div><small>Tugash sanasi</small><strong id="aftolDue">—</strong></div><div class="days-left"><small>Qolgan vaqt</small><strong id="aftolRemaining">—</strong></div></div>
+            <form id="aftolForm" class="smaska-form"><label for="aftolDate">Almashtirilgan sana</label><input id="aftolDate" type="date" required><label for="aftolDays">Muddati (kun)</label><input id="aftolDays" type="number" min="1" max="1000" placeholder="Masalan: 30" required><label for="aftolPrice">Aftol narxi ($)</label><input id="aftolPrice" type="number" min="0" step="0.01" value="54"><button class="primary-btn" type="submit">Aftol ma’lumotlarini saqlash</button></form><div class="repair-note-box" data-note-key="aftolNote"><button type="button" class="report-btn repair-note-toggle"><i class="fa-solid fa-pen"></i> Yozish</button><div class="repair-note-field hidden"><input type="text" class="repair-note-input" maxlength="500" placeholder="Ma’lumot yozing..."><small class="repair-note-saved"></small></div></div>
+          </article>
+          <article id="oilCard" class="smaska-card oil-card">
+            <div class="smaska-title"><span class="smaska-icon"><i class="fa-solid fa-droplet"></i></span><div><h2>Moy</h2><p>Har 3 marta garajga kelganda almashtiriladi</p></div><span id="oilBadge" class="smaska-badge">0 / 3 garaj</span></div>
+            <div class="smaska-dates">
+              <div><small>Garajga kelishlar</small><strong id="oilCount">0 / 3</strong></div>
+              <div><small>Holati</small><strong id="oilStatus">Almashtirish kerak emas</strong></div>
+              <div class="days-left"><small>Keyingi qadam</small><strong id="oilNext">3-garajda almashtiring</strong></div>
+            </div>
+            <p id="oilHint" class="smaska-hint">Har safar “Garajga keldi” tugmasi bosilganda hisob oshadi. 2-marta qizil ogohlantirish, 3-martada sayt ichida eslatma chiqadi.</p>
+            <div class="repair-price"><label for="oilPrice">Kastrol moyi narxi ($)</label><input id="oilPrice" type="number" min="0" step="0.01" value="310"><label for="oilServicePrice">Moy almashtirish xizmati ($)</label><input id="oilServicePrice" type="number" min="0" step="0.01" value="0"><label for="oilDescription">Moy nomi va miqdori</label><input id="oilDescription" type="text" value="Kastrol 10x40 40 litr 310 $"></div><div class="oil-reset-row"><button id="oilResetBtn" class="primary-btn" type="button"><i class="fa-solid fa-rotate"></i> Moy almashtirildi — hisobni yangilash</button><span class="oil-changed-date">Oxirgi almashtirilgan sana: <strong id="oilChangedDate">—</strong></span></div><div class="repair-note-box" data-note-key="oilNote"><button type="button" class="report-btn repair-note-toggle"><i class="fa-solid fa-pen"></i> Yozish</button><div class="repair-note-field hidden"><input type="text" class="repair-note-input" maxlength="500" placeholder="Ma’lumot yozing..."><small class="repair-note-saved"></small></div></div>
+          </article>
+          <article id="smaskaCard" class="smaska-card">
+            <div class="smaska-title"><span class="smaska-icon"><i class="fa-solid fa-oil-can"></i></span><div><h2>Smaska</h2><p>Almashtirish muddati: har 25 kunda</p></div><span id="smaskaBadge" class="smaska-badge">Nazoratda</span></div>
+            <div class="smaska-dates">
+              <div><small>Almashtirilgan sana</small><strong id="smaskaChanged">—</strong></div>
+              <div><small>Tugash sanasi</small><strong id="smaskaDue">—</strong></div>
+              <div class="days-left"><small>Qolgan vaqt</small><strong id="smaskaRemaining">—</strong></div>
+            </div>
+            <p id="smaskaHint" class="smaska-hint">Smaska almashtirilgan sanani belgilang.</p>
+            <form id="smaskaForm" class="smaska-form">
+              <label for="smaskaDate">Smaska almashtirilgan sana</label>
+              <input id="smaskaDate" type="date" required>
+              <label for="smaskaPrice">Narxi ($)</label><input id="smaskaPrice" type="number" min="0" step="0.01" value="0"><button class="primary-btn" type="submit"><i class="fa-solid fa-rotate"></i> Almashtirilgan sanani saqlash</button>
+            </form>
+          </article>
+          <article class="smaska-card"><div class="smaska-title"><div><h2>Remont-xarajat</h2><p>Moy, Aftol, Smaska va Kalodka xarajatlari</p></div></div><div class="repair-expense-actions"><button id="repairExpenseBtn" class="primary-btn" type="button">Xarajatni bilish</button></div><div id="repairExpenseReport" class="hidden"></div></article><p class="repair-note"><i class="fa-solid fa-circle-info"></i> Smaska muddati 25 kun. Aftol va Kalodka muddatini o‘zingiz belgilang.</p>
+</div>
+        </div>
+      </section>
+      <section id="garageView" class="view hidden">
+        <div class="expense-intro"><div><p class="eyebrow">AVTOMOBIL TARIXI</p><h2>Garaj</h2><p>Garajga kelgan ma’lumotlar va reys tarixini shu yerdan boshqaring.</p></div><i class="fa-solid fa-warehouse"></i></div>
+        <div class="garage-grid">
+          <article class="panel garage-card"><div class="garage-icon"><i class="fa-solid fa-warehouse"></i></div><h3>Garajga keldi</h3><p>Mashinaning yo‘nalishi, remont muddati, dizel va Platon xarajatlari jamlanmasi.</p><button id="garageSummaryBtn" class="primary-btn" type="button">Barcha ma’lumotlarni ko‘rish</button></article>
+          <article class="panel garage-card"><div class="garage-icon trip"><i class="fa-solid fa-route"></i></div><h3>1-reys</h3><p>Yuk olingan sana, qayerdan-qayerga, yuk turi, solyarka va boshqa reys ma’lumotlari.</p><button id="firstTripBtn" class="primary-btn" type="button">1-reysni ochish</button></article>
+        </div>
+        <section id="garageSummary" class="panel garage-result hidden"><div class="section-heading"><div><h3>Garajga kelgan mashina hisoboti</h3><p>Faqat shu avtomobilning saqlangan ma’lumotlari</p></div><button class="report-btn garage-back" data-garage-close="summary" type="button">Yopish ✕</button></div><div id="garageSummaryContent"></div></section>
+        <section id="tripPanel" class="panel garage-result hidden"><div class="section-heading"><div><h3 id="tripPanelTitle">1-reys ma’lumotlari</h3><p>Reys ma’lumotlarini kiriting va saqlang</p></div><button class="report-btn garage-back" data-garage-close="trip" type="button">Yopish ✕</button></div>
+          <form id="tripForm" class="expense-form trip-form">
+            <div class="trip-form-grid"><div><label for="tripDate">Yuk olingan sana</label><input id="tripDate" type="date" required></div><div><label for="tripCargo">Qanday yuk olindi?</label><input id="tripCargo" placeholder="Masalan: meva, kiyim, qurilish materiali" required></div><div><label for="tripFrom">Yuk qayerdan olindi?</label><input id="tripFrom" placeholder="Shahar / manzil" required></div><div><label for="tripTo">Qayerga olib boriladi?</label><input id="tripTo" placeholder="Shahar / manzil" required></div><div><label for="tripLiters">Necha litr solyarka olindi?</label><input id="tripLiters" type="number" min="0" step="0.1" placeholder="Masalan: 400"></div><div><label for="tripFuelCost">Solyarka uchun to‘lov</label><input id="tripFuelCost" type="number" min="0" step="0.01" placeholder="Miqdor"></div><div><label for="tripPlaton">Platon / yo‘l to‘lovi</label><input id="tripPlaton" type="number" min="0" step="0.01" placeholder="Xarajatdan avtomatik"></div><div><label for="tripSalary">Shafyor oyligi ($)</label><input id="tripSalary" type="number" min="0" step="0.01" placeholder="Xarajatdan avtomatik"></div><div><label for="tripRepairCost">Remont jami ($)</label><input id="tripRepairCost" type="number" min="0" step="0.01" placeholder="Remontdan avtomatik"></div><div><label for="tripDeliveryDate">Yuk topshirilgan sana</label><input id="tripDeliveryDate" type="date"></div><div><label for="tripCargoWeight">Yuk og‘irligi (ixtiyoriy)</label><input id="tripCargoWeight" placeholder="Masalan: 20 tonna"></div><div><label for="tripNotes">Qo‘shimcha ma’lumot</label><input id="tripNotes" placeholder="Izoh"></div></div>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> 1-reysni saqlash</button>
+          </form><p id="tripSaved" class="expense-feedback"></p><div id="tripHistory"></div>
+        </section>
+      </section>
+      <section id="overallView" class="view hidden">
+        <div class="expense-intro"><div><p class="eyebrow">REYSLAR BO‘YICHA UMUMIY HISOB</p><h2>Obshiy rasxod</h2><p>Har bir xarajat alohida bo‘limda saqlanadi. Jami qiymat dollar hisobida ko‘rsatiladi.</p></div></div>
+        <article class="panel expense-card profit-top"><div class="section-heading"><div><h3>💰 Foyda</h3><p>Har bir reys: yuk narxi − rasxod = foyda (USD)</p></div></div><div id="tripProfitSummary"></div></article>
+        <div class="overall-category-grid">
+          <article class="panel expense-card overall-category-card"><div class="section-heading"><div><h3>🍽️ Yeb-ichish</h3><p>Ovqat va kundalik ehtiyoj xarajatlari</p></div></div><form class="expense-form overall-category-form" data-category="Yeb-ichish"><label>Reys raqami</label><input name="trip" type="number" min="1" value="1" required><label>Qayerda / izoh</label><input name="place" placeholder="Shahar yoki izoh" required><label>Summa va valyuta</label><div class="money-input-row"><input name="amount" type="number" min="0.01" step="0.01" required><select name="currency"><option value="USD">Dollar</option><option value="UZS">So‘m</option><option value="CNY">Yuan</option><option value="KZT">Tenge</option><option value="RUB">Rubl</option></select></div><label>Sana</label><input name="date" type="date" required><button class="primary-btn" type="submit">Yeb-ichish xarajatini saqlash</button></form><div class="overall-category-report" data-report-category="Yeb-ichish"></div></article>
+        </div>
+        <article class="panel expense-card"><div id="overallSummary"></div></article>
+      </section>
+      <section id="chinaView" class="view hidden"><div class="expense-intro"><div><p class="eyebrow">XITOY SAFARI</p><h2>Xitoy xarajatlari</h2><p>Ovqat, mehmonxona va kirish-chiqish vaqtlarini kiriting.</p></div></div><article class="panel expense-card"><form id="chinaForm" class="expense-form"><label>Xarajat turi</label><input id="chinaType" placeholder="Ovqat / mehmonxona / boshqa" required><div id="chinaStayFields" class="china-stay-fields hidden"><label>Kirish vaqti</label><input id="chinaCheckIn" type="datetime-local"><label>Chiqish vaqti</label><input id="chinaCheckOut" type="datetime-local"></div><label>To‘langan summa</label><div class="money-input-row"><input id="chinaAmount" type="number" min="0" step="0.01" required><select id="chinaCurrency"><option value="CNY">Yuan (CNY)</option><option value="USD">Dollar (USD)</option><option value="UZS">So‘m (UZS)</option><option value="KZT">Tenge (KZT)</option><option value="RUB">Rubl (RUB)</option></select></div><label>Izoh</label><input id="chinaNote" placeholder="Qo‘shimcha ma’lumot"><button class="primary-btn" type="submit">Xitoy xarajatini saqlash</button></form><div id="chinaReport"></div></article></section>
+      <section id="paymentsView" class="view hidden">
+        <div class="expense-intro"><div><p class="eyebrow">TO‘LOVLAR</p><h2>To‘lov</h2><p>Qaysi davlatda, nima uchun va qancha to‘langanini yozing. Davlatni tanlasangiz, pul birligi o‘zi almashadi.</p></div><i class="fa-solid fa-money-check-dollar"></i></div>
+        <article class="panel expense-card payment-card">
+          <div class="section-heading"><div><h3>Yangi to‘lov</h3><p>Davlat, sabab va summani kiriting</p></div></div>
+          <form id="paymentForm" class="expense-form">
+            <label for="payCountry">Davlat</label><input id="payCountry" type="text" list="countryList" placeholder="Masalan: Qozog‘iston" required maxlength="60" autocomplete="off">
+            <datalist id="countryList"><option value="O‘zbekiston"><option value="Qozog‘iston"><option value="Qirg‘iziston"><option value="Tojikiston"><option value="Turkmaniston"><option value="Rossiya"><option value="Xitoy"><option value="Turkiya"><option value="Eron"><option value="Afg‘oniston"><option value="Ozarbayjon"><option value="Gruziya"><option value="Armaniston"><option value="Belarus"><option value="Ukraina"><option value="Polsha"><option value="Germaniya"><option value="Litva"><option value="Latviya"><option value="Estoniya"><option value="Mongoliya"><option value="Pokiston"><option value="Hindiston"><option value="Janubiy Koreya"><option value="Yaponiya"><option value="BAA"><option value="Saudiya Arabistoni"><option value="AQSh"></datalist>
+            <label for="payReason">Nima uchun to‘langan?</label><input id="payReason" type="text" placeholder="Masalan: bojxona, jarima, yo‘l to‘lovi..." required maxlength="200" autocomplete="off">
+            <label for="payAmount">Summa va valyuta</label><div class="money-input-row"><input id="payAmount" type="number" min="0.01" step="0.01" placeholder="Summa" required><select id="payCurrency"></select></div>
+            <div id="payConversion" class="currency-preview">Dollar va so‘mdagi qiymat kurs asosida chiqadi.</div>
+            <label for="payDate">Sana</label><input id="payDate" type="date" required>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> To‘lovni saqlash</button>
+          </form>
+          <p id="paySaved" class="expense-feedback"></p>
+          <div id="paymentReport"></div>
+        </article>
+      </section>
+      <section id="historyView" class="view hidden"><div class="expense-intro"><div><p class="eyebrow">TUGAGAN REYSLAR</p><h2>Eski reyslar</h2><p>Har bir tugagan reys: yuk, qayerdan–qayerga, sanalar, rasxod va foyda.</p></div><i class="fa-solid fa-clock-rotate-left"></i></div><div id="historyList"></div></section>
+      <section id="expensesView" class="view hidden">
+        <div class="expense-page">
+          <div class="expense-intro"><div><p class="eyebrow">MOLIYAVIY NAZORAT</p><h2>Xarajatlar</h2><p>Dizel, yuk narxi va Platon to‘lovlarini kiriting va hisobotlarni ko‘ring.</p></div><i class="fa-solid fa-wallet"></i></div>
+          <div class="expense-grid">
+            <article class="panel expense-card">
+              <div class="section-heading"><div><h3><i class="fa-solid fa-gas-pump expense-blue"></i> Dizel / Solyarka</h3><p>Yoqilg‘i xarajatini qayd etish</p></div></div>
+              <form id="dieselForm" class="expense-form">
+                <label for="dieselLiters">Necha litr quyildi?</label><input id="dieselLiters" type="number" min="0.1" step="0.1" placeholder="Masalan: 350" required>
+                <label for="dieselLocation">Qayerda quyildi?</label><input id="dieselLocation" type="text" placeholder="Shahar yoki zapravka nomi" required>
+                <label for="dieselUnitPrice">1 litr narxi va valyuta</label><div class="money-input-row"><input id="dieselUnitPrice" type="number" min="0" step="0.01" placeholder="Masalan: 20000"><select id="dieselCurrency"><option value="USD">Dollar ($)</option><option value="UZS">So‘m</option><option value="CNY">Yuan</option><option value="KZT">Tenge</option><option value="RUB">Rubl</option></select></div><label for="dieselPrice">Jami to‘lov (litr × 1 litr narxi, avtomatik hisoblanadi)</label><input id="dieselPrice" type="number" min="0" step="0.01" placeholder="Masalan: 10000000" required><div id="dieselTotalPreview" class="currency-preview"></div><div id="dieselConversion" class="currency-preview">Dollar va so‘mdagi qiymat kurs asosida chiqadi.</div>
+                <label for="dieselDate">Sana</label><input id="dieselDate" type="date" required>
+                <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Dizel xarajatini saqlash</button>
+                <button class="report-btn" type="button" data-report="diesel"><i class="fa-solid fa-file-lines"></i> Hisobot</button>
+              </form>
+            </article>
+            <article class="panel expense-card">
+              <div class="section-heading"><div><h3><i class="fa-solid fa-user-tie expense-green"></i> Shafyor oyligi</h3><p>Manzillar va berilgan oylikni yozing</p></div></div>
+              <form id="salaryForm" class="expense-form">
+                <label for="salaryRoute1">Qayerdan qayerga bordi?</label><input id="salaryRoute1" type="text" placeholder="1-manzil" required>
+                <div id="salaryExtraRoutes"></div><button id="addSalaryRoute" class="report-btn" type="button">+ 2-manzil qo‘shish</button>
+                <label for="salaryAmount">Oylik (berilgan pul, $)</label><input id="salaryAmount" type="number" min="0" step="0.01" placeholder="Oylik miqdori" required>
+                <label for="salaryDate">Sana</label><input id="salaryDate" type="date" required>
+                <button class="primary-btn" type="submit">Shafyor oyligini saqlash</button><button class="report-btn" type="button" data-report="salary">Hisobot</button>
+              </form>
+            </article>
+            <article class="panel expense-card">
+              <div class="section-heading"><div><h3><i class="fa-solid fa-road expense-orange"></i> Platon</h3><p>Yo‘l to‘lovi xarajatini qayd etish</p></div></div>
+              <form id="platonForm" class="expense-form">
+                <label for="platonAmount">Qancha to‘ladingiz?</label><div class="money-input-row"><input id="platonAmount" type="number" min="0" step="0.01" placeholder="To‘lov miqdori" required><select id="platonCurrency"><option value="USD">Dollar ($)</option><option value="UZS">So‘m</option><option value="CNY">Yuan</option><option value="KZT">Tenge</option><option value="RUB">Rubl</option></select></div><div id="platonConversion" class="currency-preview">Dollar va so‘mdagi qiymat kurs asosida chiqadi.</div>
+                <label for="platonLocation">Qayerda to‘ladingiz?</label><input id="platonLocation" type="text" placeholder="Shahar, yo‘l yoki punkt nomi" required>
+                <label for="platonDate">Sana</label><input id="platonDate" type="date" required>
+                <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Platon to‘lovini saqlash</button>
+                <button class="report-btn" type="button" data-report="platon"><i class="fa-solid fa-file-lines"></i> Hisobot</button>
+              </form>
+            </article>
+          </div>
+          <div class="expense-grid"><article class="panel expense-card"><h3>Platon — Xitoy</h3><form id="platonChinaForm" class="expense-form"><label>To‘lov miqdori</label><div class="money-input-row"><input id="platonChinaAmount" type="number" min="0.01" step="0.01" required><select id="platonChinaCurrency"><option value="CNY">Yuan</option><option value="USD">Dollar</option><option value="UZS">So‘m</option><option value="KZT">Tenge</option><option value="RUB">Rubl</option></select></div><label>Yo‘l / punkt</label><input id="platonChinaLocation" required><label>Sana</label><input id="platonChinaDate" type="date" required><button class="primary-btn">Xitoy Platonini saqlash</button></form></article><article class="panel expense-card"><h3>Platon — Rossiya</h3><form id="platonRussiaForm" class="expense-form"><label>To‘lov miqdori</label><div class="money-input-row"><input id="platonRussiaAmount" type="number" min="0.01" step="0.01" required><select id="platonRussiaCurrency"><option value="RUB">Rubl</option><option value="USD">Dollar</option><option value="UZS">So‘m</option><option value="CNY">Yuan</option><option value="KZT">Tenge</option></select></div><label>Yo‘l / punkt</label><input id="platonRussiaLocation" required><label>Sana</label><input id="platonRussiaDate" type="date" required><button class="primary-btn">Rossiya Platonini saqlash</button></form></article></div>
+          <section id="expenseReport" class="panel expense-report hidden">
+            <div class="section-heading"><div><h3 id="reportTitle">Hisobot</h3><p>Saqlangan yozuvlar</p></div><button id="closeReport" class="close-report" type="button">Yopish ✕</button></div>
+            <div id="reportTable"></div>
+          </section>
+          <p id="dieselSaved" class="expense-feedback"></p>
+        </div>
+      </section>
+    </main>
+  </section>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

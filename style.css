@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--blue:#165dff;--navy:#10203c;--muted:#7c8799;--line:#e5eaf2;--bg:#f4f7fc}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;color:var(--navy);background:var(--bg)}button,input,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transparent}
+.login-page{min-height:100vh;background:linear-gradient(90deg,rgba(5,31,57,.05),rgba(5,31,57,.05)),url('https://images.unsplash.com/photo-1592838064575-70ed626d3a0e?auto=format&fit=crop&w=2200&q=90') center/cover no-repeat;position:relative;display:flex;align-items:center;justify-content:flex-end;padding:110px 8.5% 50px}
+.login-page:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,30,56,.08),rgba(9,43,79,.08) 45%,rgba(4,28,54,.16))}
+.topbar{position:absolute;z-index:1;top:0;left:0;right:0;height:82px;display:flex;align-items:center;padding:0 6.6%;color:white}.brand{display:flex;align-items:center;gap:15px;text-decoration:none;color:inherit;font-weight:700;letter-spacing:.4px}.brand i{font-size:24px}.topbar nav{display:flex;gap:34px;margin:auto;font-size:14px;font-weight:600}.topbar nav a{color:white;text-decoration:none}.topbar nav a:hover{opacity:.75}
+.login-card{position:relative;z-index:1;width:min(100%,530px);min-height:570px;background:rgba(255,255,255,.97);border-radius:18px;padding:38px 55px;box-shadow:0 24px 80px #0b28462b;text-align:center}.login-card h1{font-size:32px;margin:0 0 12px;letter-spacing:-.8px}.subtitle{font-size:14px;color:#6d788b;margin:0}.login-card form{margin-top:78px;text-align:left}.login-card label,.route-form label,.details-panel label{display:block;font-size:13px;font-weight:600;margin:0 0 9px}.login-card input,.route-form input,.route-form textarea,.details-panel input,.details-panel textarea{width:100%;border:1px solid #d6dce7;border-radius:9px;padding:13px 14px;outline:none;background:#fff;margin-bottom:18px;color:var(--navy);transition:.2s}.login-card input:focus,.route-form input:focus,.route-form textarea:focus,.details-panel input:focus,.details-panel textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #165dff15}.login-card button,.primary-btn{border:0;background:#142dff;color:white;border-radius:10px;padding:14px 18px;cursor:pointer;font-weight:600;transition:.2s}.login-card button{width:100%;margin-top:17px}.login-card button:hover,.primary-btn:hover{background:#0e48d9;transform:translateY(-1px)}.login-card button span{font-size:19px;margin-left:5px}
+.hidden{display:none!important}.dashboard{min-height:100vh;display:flex}.sidebar{width:255px;background:#fff;border-right:1px solid var(--line);padding:27px 17px;display:flex;flex-direction:column;flex-shrink:0}.side-brand{color:#12213b;padding:0 13px 35px;font-size:14px}.side-brand i{color:var(--blue);font-size:22px}.driver-card{display:flex;align-items:center;gap:12px;padding:15px 10px 22px;border-bottom:1px solid var(--line);margin-bottom:22px}.avatar{height:39px;width:39px;display:grid;place-items:center;border-radius:12px;background:#eaf0ff;color:var(--blue)}.driver-card strong,.driver-card small{display:block}.driver-card strong{font-size:12px}.driver-card small{font-size:10px;color:var(--muted);margin-top:5px}.menu-link{display:flex;align-items:center;gap:13px;border:0;background:transparent;color:#69768a;text-align:left;padding:14px 13px;border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:13px;font-weight:600}.menu-link i{width:18px;font-size:15px}.menu-link:hover,.menu-link.active{background:#edf2ff;color:var(--blue)}.sidebar-bottom{margin-top:auto;padding:18px 10px 0;border-top:1px solid var(--line);font-size:11px;color:#7b8798;display:flex;gap:9px;align-items:center}.sidebar-bottom i{color:#20a879}
+.main-content{min-width:0;flex:1;padding:32px 36px 45px;max-width:1700px;margin:0 auto;width:100%}.main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}.eyebrow{font-size:10px;letter-spacing:1.6px;font-weight:800;color:var(--blue);margin:0 0 8px}.main-header h1{font-size:26px;margin:0;letter-spacing:-.7px}.status{font-size:12px;color:#5b6a7e;background:#fff;border:1px solid var(--line);padding:10px 13px;border-radius:30px}.status span,.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#21b981;margin-right:7px}.welcome-panel{min-height:150px;background:linear-gradient(110deg,#123c91,#246cff);color:#fff;border-radius:17px;padding:27px 30px;display:flex;justify-content:space-between;align-items:center;overflow:hidden;position:relative}.welcome-panel .eyebrow{color:#bed1ff}.welcome-panel h2{font-size:23px;margin:0 0 9px}.welcome-panel p:not(.eyebrow){font-size:12px;color:#dce6ff;margin:0;max-width:460px;line-height:1.7}.hero-truck{font-size:75px;opacity:.2;margin-right:28px;transform:skew(-8deg)}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.stat-card{display:flex;align-items:center;gap:13px;padding:17px 19px;background:#fff;border:1px solid var(--line);border-radius:13px}.stat-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:12px}.stat-icon.blue{color:#2764f6;background:#edf2ff}.stat-icon.red{color:#ed5d68;background:#fff0f1}.stat-card small,.stat-card strong{display:block}.stat-card small{font-size:11px;color:var(--muted);margin-bottom:5px}.stat-card strong{font-size:13px}.workspace{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.85fr);gap:18px;align-items:start}.panel,.route-panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:21px}.section-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.section-heading h3{font-size:15px;margin:0 0 6px}.section-heading p{font-size:11px;color:var(--muted);margin:0}.section-heading>i{color:var(--blue);font-size:20px}.map-frame{height:500px;width:100%;border-radius:11px;overflow:hidden;background:#e7eef7;border:1px solid var(--line)}.map-frame iframe{width:100%;height:100%;border:0}.map-legend{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:15px;font-size:10px;color:#6b788b}.map-legend span{display:flex;align-items:center;gap:6px}.legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block}.legend-dot.origin{background:#1674ff}.legend-dot.destination{background:#f04452}.map-legend a{color:var(--blue);text-decoration:none;margin-left:auto;font-weight:700}.route-form{padding:21px}.route-form form{margin-top:22px}.route-form input,.route-form textarea,.details-panel input,.details-panel textarea{font-size:12px;padding:12px;margin-bottom:15px}.route-form label,.details-panel label{font-size:11px}.primary-btn{width:100%;font-size:12px;padding:13px}.route-message{font-size:11px;line-height:1.6;color:#78869a;background:#f7f9fd;border-radius:9px;padding:11px 12px;margin-top:14px}.details-panel{max-width:760px}.vehicle-number{display:flex;align-items:center;gap:14px;padding:18px;background:#f5f8ff;border:1px solid #e6edff;border-radius:12px;margin-bottom:23px}.vehicle-number>i{font-size:25px;color:var(--blue)}.vehicle-number small,.vehicle-number strong{display:block}.vehicle-number small{font-size:11px;color:var(--muted);margin-bottom:5px}.vehicle-number strong{font-size:16px}.saved-route{background:#f7f9fd;padding:18px;border-radius:10px;font-size:13px;line-height:1.8;margin-bottom:18px}
+@media(max-width:1100px){.login-page{padding-right:5%}.workspace{grid-template-columns:1fr}.map-frame{height:500px}.route-form{max-width:none}.main-content{padding:25px 22px}}
+@media(max-width:700px){.login-page{justify-content:center;padding:100px 18px 30px}.topbar{padding:0 20px;height:72px}.topbar nav{display:none}.login-card{padding:35px 25px;min-height:auto}.login-card form{margin-top:48px}.dashboard{display:block}.sidebar{width:100%;padding:17px;position:relative}.side-brand{padding-bottom:15px}.driver-card,.sidebar-bottom{display:none}.sidebar .menu-link{display:inline-flex;margin:8px 3px 0 0;padding:11px;font-size:11px}.main-content{padding:22px 14px}.main-header h1{font-size:22px}.welcome-panel{padding:22px}.welcome-panel h2{font-size:19px}.hero-truck{font-size:43px;margin:0}.stats{grid-template-columns:1fr}.panel,.route-panel{padding:15px}.map-frame{height:500px}.map-legend{gap:9px}.map-legend a{margin-left:0}}
+
+/* Remont / smaska monitoring */
+.repair-page{max-width:850px}.smaska-card{border:1px solid #dce3ef;border-radius:14px;padding:22px;background:#fff;transition:background .2s,border-color .2s}.smaska-card.warning{background:#fff4c7;border-color:#f0c84b}.smaska-card.danger{background:#ffe1e3;border-color:#f06a73}.smaska-title{display:flex;align-items:center;gap:13px;flex-wrap:wrap}.smaska-icon{width:46px;height:46px;border-radius:13px;background:#eaf0ff;color:#245cff;display:grid;place-items:center;font-size:20px}.smaska-title h2{font-size:20px;margin:0 0 5px}.smaska-title p{font-size:12px;color:#68768b;margin:0}.smaska-badge{margin-left:auto;padding:7px 10px;border-radius:30px;background:#e9f8f1;color:#16865c;font-size:11px;font-weight:700}.smaska-card.warning .smaska-badge{background:#f5cf54;color:#5f4800}.smaska-card.danger .smaska-badge{background:#f04452;color:#fff}.smaska-dates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0 13px}.smaska-dates>div{background:rgba(255,255,255,.72);border:1px solid #e2e7ef;border-radius:10px;padding:13px}.smaska-dates small,.smaska-dates strong{display:block}.smaska-dates small{font-size:10px;color:#6d788b;margin-bottom:8px}.smaska-dates strong{font-size:14px}.smaska-hint{font-size:12px;line-height:1.6;color:#647187;margin:12px 0 20px}.smaska-form{border-top:1px solid #dfe5ef;padding-top:18px}.smaska-form label{display:block;font-size:11px;font-weight:700;margin-bottom:9px}.smaska-form input{display:block;width:100%;border:1px solid #d6dce7;border-radius:9px;padding:12px;margin-bottom:14px;background:#fff}.repair-note{font-size:11px;color:#718096;line-height:1.7;margin-top:16px}.repair-note i{color:#2865f6;margin-right:5px}
+@media(max-width:700px){.smaska-dates{grid-template-columns:1fr}.smaska-title{align-items:flex-start}.smaska-badge{margin-left:0}}
+
+/* Interactive route map */
+#mapCanvas{width:100%;height:100%;z-index:1}
+.route-pin{width:18px;height:18px;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 9px #172b4d70}
+.route-pin.origin{background:#1674ff}.route-pin.destination{background:#f04452}
+.leaflet-popup-content-wrapper{border-radius:10px;font-family:Inter,Arial,sans-serif}.leaflet-popup-content{font-size:12px;font-weight:600}
+
+/* Xarajatlar */
+.expense-page{max-width:1200px}.expense-intro{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(115deg,#123c91,#286bff);color:#fff;padding:25px 29px;border-radius:16px;margin-bottom:19px}.expense-intro .eyebrow{color:#cbd9ff}.expense-intro h2{margin:0 0 8px;font-size:24px}.expense-intro p:not(.eyebrow){font-size:12px;color:#e0e8ff;margin:0}.expense-intro>i{font-size:47px;opacity:.3;margin-right:15px}.expense-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px;align-items:start}.expense-card{min-width:0}.expense-card h3 i{margin-right:7px}.expense-blue{color:#2468ff}.expense-green{color:#159b70}.expense-orange{color:#e28b20}.expense-form{display:flex;flex-direction:column;gap:0}.expense-form label{font-size:11px;font-weight:700;margin:0 0 8px}.expense-form input{width:100%;padding:12px 13px;border:1px solid #d8e0ec;border-radius:9px;margin-bottom:14px;outline:none;background:#fff;font:12px Inter,Arial,sans-serif}.expense-form input:focus{border-color:#2865f6;box-shadow:0 0 0 3px #2865f615}.report-btn{width:100%;padding:12px;margin-top:9px;border:1px solid #d7e0f0;background:#f4f7ff;color:#2258cf;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer}.report-btn:hover{background:#e8efff}.expense-feedback{font-size:12px;color:#16865c;margin:13px 2px}.expense-report{margin-top:20px;overflow:hidden}.close-report{border:1px solid #dce3ef;background:#fff;border-radius:8px;padding:8px 11px;cursor:pointer;font-size:11px}.report-table-wrap{overflow-x:auto}.report-table{width:100%;border-collapse:collapse;font-size:12px;min-width:550px}.report-table th,.report-table td{text-align:left;padding:13px 12px;border-bottom:1px solid #e9edf4}.report-table th{background:#f5f8ff;color:#627087;font-size:10px;text-transform:uppercase;letter-spacing:.5px}.report-table td strong{color:#172849}.report-total{font-size:12px;font-weight:800;padding:15px 12px;background:#f7f9fd;border-radius:8px;margin-top:12px}.empty-report{padding:24px;text-align:center;color:#77849a;font-size:12px;background:#f7f9fd;border-radius:10px}
+@media(max-width:900px){.expense-grid{grid-template-columns:1fr}}@media(max-width:700px){.expense-intro{padding:20px}.expense-intro h2{font-size:21px}.expense-intro>i{font-size:34px;margin:0}}
+
+.money-input-row{display:grid;grid-template-columns:minmax(0,1fr) 125px;gap:8px}.money-input-row input,.money-input-row select{min-width:0;width:100%;padding:12px 10px;border:1px solid #d8e0ec;border-radius:9px;margin-bottom:8px;background:#fff;font:12px Inter,Arial,sans-serif}.currency-preview{font-size:11px;line-height:1.6;color:#2865c7;background:#f3f7ff;padding:8px 10px;border-radius:7px;margin:-2px 0 14px}.report-subline{display:block;color:#2865c7;font-size:10px;margin-top:4px}.report-original{display:block;color:#65738a;font-size:10px;margin-top:3px}
+
+/* Garaj va avtomobilga bog‘langan hisob */
+.login-hint{display:block;color:#758198;font-size:11px;line-height:1.5;text-align:center;margin-top:12px;margin-bottom:0}
+.garage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+.garage-card{padding:25px;display:flex;flex-direction:column;align-items:flex-start;min-height:250px}
+.garage-icon{width:48px;height:48px;border-radius:14px;background:#edf2ff;color:#2865f6;display:grid;place-items:center;font-size:22px;margin-bottom:15px}
+.garage-icon.trip{background:#e8f8f1;color:#16956b}
+.garage-card h3{font-size:17px;margin:0 0 8px}
+.garage-card p{font-size:12px;line-height:1.7;color:#718096;flex:1;margin:0 0 20px}
+.garage-card .primary-btn{margin-top:auto}
+.garage-result{margin-top:20px;max-width:1100px}
+.garage-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:22px}
+.garage-summary-grid>div{padding:15px;border:1px solid #e2e8f2;border-radius:11px;background:#f8faff}
+.garage-result h4{font-size:13px;margin:12px 0 8px}
+.garage-result p,.garage-result li{font-size:12px;line-height:1.7;color:#58677e}
+.garage-result ul{margin:0 0 15px;padding-left:20px}
+.garage-muted{color:#8290a3!important}
+.garage-back{width:auto;margin:0}
+.trip-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+.trip-form-grid label{display:block;font-size:11px;font-weight:700;margin-bottom:8px}
+.trip-form-grid input{width:100%;padding:12px 13px;border:1px solid #d8e0ec;border-radius:9px;margin-bottom:14px;background:#fff;font:12px Inter,Arial,sans-serif}
+.trip-record{border:1px solid #e0e7f2;border-radius:11px;padding:14px 16px;margin-top:12px;background:#fafcff}
+.trip-record h4{margin-top:0}
+@media(max-width:750px){.garage-grid,.garage-summary-grid,.trip-form-grid{grid-template-columns:1fr}.garage-card{min-height:0}.garage-result .section-heading{align-items:flex-start;gap:10px}}
+
+/* Login: ikki alohida akkaunt bo‘limi */
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:30px;padding:5px;background:#f0f4fb;border-radius:11px}
+.auth-tab{border:0;border-radius:8px;padding:11px 8px;background:transparent;color:#627087;font-size:12px;font-weight:700;cursor:pointer}
+.auth-tab.active{background:#fff;color:#165dff;box-shadow:0 2px 9px #10203c12}
+.login-card .auth-form{margin-top:25px}
+.login-card .auth-form input{margin-bottom:15px}
+.login-card .auth-form button{margin-top:5px}
+@media(max-width:700px){.auth-tabs{margin-top:25px}.login-card .auth-form{margin-top:22px}}
+
+/* Moy almashtirish ogohlantirishi */
+.oil-card.danger{background:#ffe1e3;border-color:#f04452;box-shadow:0 0 0 1px #f0445233}
+.oil-card.danger .smaska-badge{background:#f04452;color:#fff}
+.oil-notice{position:fixed;right:22px;bottom:22px;z-index:9999;width:min(340px,calc(100vw - 32px));padding:18px;border:2px solid #f04452;border-radius:14px;background:#fff1f2;box-shadow:0 12px 35px #18233a30;color:#7f1d1d}
+.oil-notice strong{font-size:16px}.oil-notice p{margin:8px 0 14px;line-height:1.5}.oil-notice button{border:0;border-radius:8px;padding:9px 14px;background:#d92332;color:#fff;font-weight:700;cursor:pointer}
+
+/* Remont kartalarini ixchamlashtirish */
+.repair-page{max-width:760px}.smaska-card{padding:14px;margin-bottom:12px}.smaska-icon{width:34px;height:34px;border-radius:10px;font-size:16px}.smaska-title{gap:9px}.smaska-title h2{font-size:17px}.smaska-dates{gap:8px;margin:13px 0 9px}.smaska-dates>div{padding:9px}.smaska-dates strong{font-size:12px}.smaska-hint{margin:8px 0 12px}.smaska-form{padding-top:12px}.smaska-form input{padding:9px;margin-bottom:10px}.oil-reset-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.oil-changed-date{font-size:12px;color:#596579}.oil-changed-date strong{color:#172033}.kalod-card{margin-top:12px}
+/* FURA layout refinements */
+.repair-cards{display:flex;flex-wrap:wrap;flex-direction:row;align-items:stretch;gap:12px}
+.repair-cards>.smaska-card{flex:1 1 300px;min-width:260px;margin:0;box-sizing:border-box}
+.repair-cards>.smaska-card:last-of-type{flex-basis:100%}
+.repair-price input{display:block;width:100%;box-sizing:border-box;border:1px solid #d6dce7;border-radius:9px;padding:9px;margin:5px 0 10px}
+.aftol-addons{margin:10px 0 14px;overflow-x:auto}.aftol-addons table{width:100%;border-collapse:collapse;font-size:12px}.aftol-addons th,.aftol-addons td{padding:7px;border-bottom:1px solid #e4e9f2;text-align:left}.aftol-addons th{background:#f4f7fc}.aftol-addons input{width:95px;max-width:100%;padding:7px;border:1px solid #d6dce7;border-radius:7px;box-sizing:border-box}
+.repair-expense-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}.repair-expense-actions .primary-btn{margin:0;min-width:180px}.repair-cards .smaska-card>p,.repair-cards .smaska-card>button{max-width:100%}
+@media(max-width:620px){.repair-cards>.smaska-card{flex-basis:100%;min-width:0}.repair-expense-actions .primary-btn{width:100%}}
+
+/* Remont bo'limi: kartalar keng joyni to'liq egallaydi, 2 ustunli teng tartib */
+.repair-page{width:100%;max-width:none;box-sizing:border-box}
+.repair-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:14px;width:100%}
+.repair-cards>.smaska-card{width:100%;min-width:0;min-height:0;box-sizing:border-box;margin:0;display:flex;flex-direction:column}
+.repair-cards>.smaska-card:last-of-type{grid-column:1 / -1}
+.repair-cards .smaska-form{display:flex;flex-direction:column;gap:0;flex:1}
+.repair-cards .smaska-form input,.repair-cards .repair-price input,.repair-cards .aftol-addons input{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.repair-cards .smaska-form button,.repair-cards .oil-reset-row button,.repair-cards .repair-expense-actions button{width:100%;min-height:44px;box-sizing:border-box;margin-top:auto}
+.repair-cards .oil-reset-row{align-items:stretch;flex-direction:column;gap:8px}
+.repair-cards .smaska-dates>div{min-width:0;overflow-wrap:anywhere}
+.repair-cards .smaska-title{align-items:center;flex-wrap:wrap}
+.repair-cards .aftol-addons th,.repair-cards .aftol-addons td{padding:6px}
+@media(max-width:900px){.repair-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.repair-cards{grid-template-columns:minmax(0,1fr)}.repair-cards>.smaska-card:last-of-type{grid-column:auto}.repair-cards .smaska-form button,.repair-cards .oil-reset-row button{width:100%}}
+.vehicle-picker-btn{border:0;background:#edf2ff;color:#1648ff;border-radius:8px;padding:7px 10px;font-weight:700;cursor:pointer;text-align:left}.vehicle-picker-btn:hover{background:#dfe8ff}#overallSummary,#chinaReport{margin-top:18px;overflow:auto}.expense-form .currency-preview{display:block}
+
+/* Obshiy rasxod: yashirin qo‘lda kiritish formasi */
+#overallExpenseForm{display:none!important;}
+
+.overall-fuel-summary{border:1px solid #dbe5f3;border-radius:14px;padding:18px;margin:20px 0;background:#f8fbff}.overall-fuel-summary h3{margin:0 0 14px}.overall-fuel-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.overall-fuel-stats>div{background:#fff;border:1px solid #e0e8f4;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}.overall-fuel-stats span{font-size:13px;color:#64748b}.overall-fuel-stats strong{font-size:24px;color:#1748cc}.china-stay-fields{display:flex;flex-direction:column;gap:8px}.china-stay-fields.hidden{display:none!important}@media(max-width:700px){.overall-fuel-stats{grid-template-columns:1fr}}
+
+/* OWNER access and language controls */
+.header-actions{display:flex;align-items:center;gap:12px}.language-label{font-size:11px;color:#65738a;font-weight:700}.language-select{border:1px solid #dce4f0;border-radius:9px;padding:9px 11px;background:#fff;color:#172b4d;font-size:12px}.owner-access-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:14px;padding:13px 14px;border:1px solid #d8e2f3;border-radius:11px;background:linear-gradient(135deg,#122b52,#245cff);color:#fff;font-weight:800;letter-spacing:.7px;cursor:pointer;box-shadow:0 8px 20px #1c4ed81c}.owner-access-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.owner-access-btn i{font-size:15px}.sidebar-bottom{margin-top:auto}.sidebar .owner-access-btn{flex-shrink:0}@media(max-width:700px){.header-actions{gap:7px;flex-wrap:wrap;justify-content:flex-end}.language-select{max-width:125px}.owner-access-btn{width:auto;display:inline-flex;margin:10px 0 0}.sidebar-bottom{display:none!important}}
+
+/* OWNER tugmasi login sahifasining yuqori navigatsiyasida */
+.login-owner-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid #ffffff65;border-radius:9px;background:linear-gradient(135deg,#173c78,#2865f6);color:#fff;font-size:12px;font-weight:800;letter-spacing:.6px;cursor:pointer;white-space:nowrap}.login-owner-btn:hover{filter:brightness(1.12);transform:translateY(-1px)}.topbar nav .login-owner-btn{color:#fff}
+@media(max-width:700px){.topbar{justify-content:space-between}.topbar nav{display:flex;gap:0;margin-left:auto}.topbar nav>a{display:none}.login-owner-btn{padding:9px 12px;font-size:11px}}
+
+/* Login navbar: OWNER tugmasi o‘ng chetda va ixcham balandlikda */
+.topbar nav{margin-left:auto!important;margin-right:0!important;gap:26px;align-items:center}
+.login-owner-btn{height:38px;min-height:38px;padding:0 15px!important;font-size:11px!important;line-height:1;border-radius:9px;flex:0 0 auto}
+@media(max-width:700px){.topbar nav{display:flex!important;margin-left:auto!important;gap:0!important}.topbar nav>a{display:none!important}.login-owner-btn{height:36px;min-height:36px;padding:0 12px!important}}
+
+/* Chiroyli mashina tanlash oynasi */
+.vehicle-modal{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:18px;background:#101a2dcc;backdrop-filter:blur(7px)}
+.vehicle-modal.hidden{display:none!important}
+.vehicle-modal-card{position:relative;width:min(480px,100%);max-height:min(85vh,720px);overflow:auto;padding:30px;border:1px solid #e4eaf4;border-radius:22px;background:#fff;box-shadow:0 25px 90px #08152d55;text-align:center}
+.vehicle-modal-close{position:absolute;right:15px;top:13px;width:34px;height:34px;border:0;border-radius:50%;background:#f0f3f9;color:#526078;font-size:24px;cursor:pointer}
+.vehicle-modal-icon{width:56px;height:56px;margin:0 auto 14px;display:grid;place-items:center;border-radius:17px;background:#edf3ff;color:#2865f6;font-size:23px}
+.vehicle-modal-card h2{margin:0 0 8px;font-size:22px;color:#182943}.vehicle-modal-subtitle{margin:0 0 20px;color:#77849a;font-size:12px;line-height:1.5}
+.vehicle-modal-list{display:grid;gap:9px;margin:0 0 18px;text-align:left}.vehicle-option{width:100%;display:flex;align-items:center;gap:12px;padding:14px;border:1px solid #e3eaf4;border-radius:12px;background:#fbfcff;color:#263852;font-weight:800;text-align:left;cursor:pointer}.vehicle-option>i:first-child{color:#2865f6}.vehicle-option>i:last-child{margin-left:auto;color:#91a0b5}.vehicle-option:hover{border-color:#9bb7ff;background:#f2f6ff}.vehicle-modal-empty{padding:18px;border:1px dashed #cbd5e1;border-radius:12px;color:#7b8799;font-size:12px;line-height:1.5}
+.vehicle-modal-add{display:grid;grid-template-columns:1fr 1fr;gap:9px}.vehicle-modal-add input{width:100%;min-width:0;height:43px;padding:0 11px;border:1px solid #d8e1ee;border-radius:9px;font-size:12px}.vehicle-modal-add button{grid-column:1/-1;height:44px;border:0;border-radius:10px;background:linear-gradient(135deg,#173c78,#2865f6);color:white;font-weight:800;cursor:pointer}.vehicle-modal-message{min-height:18px;margin:10px 0 0;color:#d04444;font-size:12px}
+@media(max-width:480px){.vehicle-modal-card{padding:25px 18px}.vehicle-modal-add{grid-template-columns:1fr}}
+
+/* Obshiy rasxod: kategoriyalar va reys foydasi */
+.overall-category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin:18px 0}
+.overall-category-card{min-width:0}
+.overall-category-total{display:flex;flex-direction:column;gap:5px;padding:12px 14px;margin-top:14px;border-radius:12px;background:rgba(34,197,94,.08)}
+.overall-category-total strong{font-size:1.05rem}.overall-category-total span{font-size:.86rem;color:var(--muted,#64748b)}
+.overall-currency-totals{display:flex;flex-wrap:wrap;gap:8px 22px}
+.trip-profit-row{padding:15px 0;border-bottom:1px solid rgba(148,163,184,.25)}
+.trip-profit-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.trip-profit-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.trip-profit-values>div{display:flex;flex-direction:column;gap:5px;padding:12px;border-radius:12px;background:rgba(148,163,184,.10);min-width:0}
+.trip-profit-values small{font-size:.78rem;color:var(--muted,#64748b)}
+.trip-profit-values b{font-size:1rem;overflow-wrap:anywhere}
+.profit-positive{color:#16a34a}.profit-negative{color:#dc2626}
+@media(max-width:560px){.trip-profit-values{gap:6px}.trip-profit-values>div{padding:9px 7px}.trip-profit-values b{font-size:.88rem}}
+
+/* Obshiy rasxod: Foyda eng tepada, kategoriya konteynerlarida dollar jami */
+.profit-top{margin-bottom:18px}
+.overall-usd-final{margin-top:8px;padding-top:10px;border-top:1px solid rgba(148,163,184,.35);font-size:1.1rem;color:#16a34a}
+.overall-category-total .overall-currency-totals p{margin:0}
+
+/* Asosiy joy: Yuk narxi qutisi; foyda foizi */
+.home-cargo-box{margin-top:18px;max-width:620px}
+.trip-profit-note{margin:10px 0 0;font-size:.85rem;color:var(--muted,#64748b)}
+#routeCargoPrice{margin-top:12px}#routeCargoPrice p{margin:6px 0}
+
+/* Foyda: rasxod qayerga ishlatilgani */
+.expense-breakdown{margin-top:12px;padding:12px 14px;border-radius:12px;background:rgba(148,163,184,.10)}
+.expense-breakdown-title{font-size:.85rem;font-weight:700;margin-bottom:8px}
+.expense-breakdown-row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:.9rem;border-bottom:1px dashed rgba(148,163,184,.3)}
+.expense-breakdown-row b{white-space:nowrap}
+.expense-breakdown-total{border-bottom:0;margin-top:4px;padding-top:9px;border-top:1px solid rgba(148,163,184,.45);font-weight:800}
+.overall-expense-block h4{margin:0 0 4px}
+
+/* Eski reyslar va Remont yozuvlari */
+.history-card{margin-bottom:16px}
+.history-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:1rem}
+.history-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.history-grid>div{padding:10px 12px;border-radius:10px;background:rgba(148,163,184,.10);min-width:0}
+.history-grid small{display:block;font-size:.75rem;color:var(--muted,#64748b);margin-bottom:4px}
+.history-grid b{overflow-wrap:anywhere;font-size:.9rem}
+@media(max-width:700px){.history-grid{grid-template-columns:1fr 1fr}}
+.repair-note-box{margin-top:12px}
+.repair-note-field{margin-top:8px}
+.repair-note-field input{width:100%;padding:10px 12px;border:1px solid #d6dce7;border-radius:9px;box-sizing:border-box}
+.repair-note-saved{display:block;margin-top:4px;color:#16865c;font-size:11px}
+
+/* To'lov bo'limi, Chiqish tugmasi */
+.payment-card{max-width:620px}
+.pay-del{width:auto!important;margin:0!important;padding:6px 10px!important;color:#b42318!important}
+.logout-btn{display:flex;align-items:center;gap:13px;border:0;background:transparent;color:#b42318;text-align:left;padding:14px 13px;border-radius:10px;margin-top:auto;cursor:pointer;font-size:13px;font-weight:600}
+.logout-btn:hover{background:#fff0f1}
+.logout-btn+.sidebar-bottom{margin-top:0}
+@media(max-width:700px){.logout-btn{display:inline-flex;margin:8px 3px 0 0;padding:11px;font-size:11px}}
+
+/* Eski reyslar: yig'iladigan kartalar */
+.history-head{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;margin-bottom:0}
+.history-body{margin-top:14px}
+.hchev{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:6px;background:#e9eef8;color:#245cff;font-size:12px;flex-shrink:0}
+.history-head:hover .hchev{background:#d9e4fb}
+.history-sum{flex:1;min-width:0;color:var(--muted,#64748b);font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.history-head>span:last-child{white-space:nowrap;font-weight:700}

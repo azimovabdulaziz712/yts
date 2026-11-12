@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FURA SYSTEM — OWNER</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#eef3fb,#f8faff);font-family:Inter,Arial,sans-serif;color:#17243b}.wrap{width:min(760px,calc(100% - 32px));margin:48px auto}.brand{font-size:12px;font-weight:900;letter-spacing:2px;color:#245cff;margin-bottom:22px}.head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.head h1{font-size:28px;margin:0 0 7px}.muted{color:#718096;font-size:13px;line-height:1.6}.card{background:#fff;border:1px solid #e0e7f2;border-radius:20px;padding:28px;box-shadow:0 18px 55px #172b4d12}.card h2{margin:0 0 22px;font-size:19px}label{display:block;font-size:12px;font-weight:800;margin:16px 0 8px;color:#34435a}input{width:100%;height:48px;border:1px solid #d8e1ee;border-radius:10px;padding:0 14px;font-size:14px;outline:none}input:focus{border-color:#2865f6;box-shadow:0 0 0 3px #2865f61a}button{border:0;border-radius:10px;padding:13px 20px;background:linear-gradient(135deg,#173c78,#2865f6);color:#fff;font-weight:800;cursor:pointer}button:hover{filter:brightness(1.07)}.create{width:100%;margin-top:22px;height:48px}.msg{font-size:13px;min-height:20px;margin:12px 0 0;color:#2457c5}.company-list{margin-top:22px}.company{padding:14px 0;border-top:1px solid #e8edf5;display:flex;justify-content:space-between;gap:15px;align-items:center}.company strong{font-size:14px}.company small{color:#718096}.logout{background:#e9eef8;color:#253653;padding:10px 15px}.hidden{display:none!important}#companies{color:#17243b}.firm-card{padding:18px 0;border-top:1px solid #e8edf5}.firm-head{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;padding:4px 0;user-select:none}.firm-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.chev{display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:6px;background:#e9eef8;color:#245cff;font-size:12px}.firm-head:hover .chev{background:#d9e4fb}.firm-head strong{font-size:16px}.firm-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}.firm-row input{width:auto;flex:1 1 150px;height:40px;margin:0}.firm-label{font-size:12px;font-weight:800;color:#34435a}.veh-title{margin-top:16px}.pw-value{font-family:monospace;font-size:14px;background:#f1f5fb;padding:7px 11px;border-radius:8px;word-break:break-all}.mini{padding:9px 13px!important;font-size:12px}.veh-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed #e0e7f2}.veh-plate{font-weight:700}@media(max-width:600px){.wrap{margin:24px auto}.card{padding:20px}.head h1{font-size:23px}}
+</style>
+<script>
+// OWNER sahifasi faqat login sahifasidagi ikki bosqichli tekshiruvdan keyin ochiladi.
+(function(){let ok=false;try{const g=JSON.parse(sessionStorage.getItem('furaOwnerGate')||'null');ok=!!g&&Date.now()-g.t<60000;}catch(e){}sessionStorage.removeItem('furaOwnerGate');if(!ok)location.replace('index.html');})();
+</script>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand">FURA SYSTEM / CONTROL CENTER</div>
+  <div class="head"><div><h1>OWNER kabineti</h1><div class="muted">Yangi firma akkauntini yaratish va mashina limitini belgilash</div></div><button class="logout" id="logout" type="button">Chiqish</button></div>
+  <section class="card">
+    <h2>Yangi akkaunt ochish</h2>
+    <form id="createCompanyForm">
+      <label for="companyName">Yangi firma nomini kiriting</label>
+      <input id="companyName" type="text" placeholder="Firma nomi" required maxlength="80" autocomplete="off">
+      <label for="companyPassword">Parol oling</label>
+      <input id="companyPassword" type="password" placeholder="Parol kiriting" required minlength="4" autocomplete="new-password">
+      <label for="vehicleLimit">Qancha mashina bo‘lsin</label>
+      <input id="vehicleLimit" type="number" min="1" max="500" step="1" required placeholder="Masalan: 10">
+      <button class="create" type="submit">Ochish</button>
+      <p id="message" class="msg" role="status"></p>
+    </form>
+  </section>
+  <section class="card company-list"><h2>Yaratilgan firmalar</h2><div id="companies" class="muted">Hozircha firma yo‘q.</div></section>
+</main>
+<script>
+function toHex(b){return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function hashSecret(secret,salt,iter=150000){const enc=new TextEncoder();const key=await crypto.subtle.importKey('raw',enc.encode(String(secret)),'PBKDF2',false,['deriveBits']);return toHex(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:enc.encode(salt),iterations:iter},key,256))}
+async function makeCredential(secret){const salt=toHex(crypto.getRandomValues(new Uint8Array(16)));return {salt,passHash:await hashSecret(secret,salt,310000),iter:310000}}
+// Owner sessiyasi 15 daqiqadan keyin yopiladi.
+setTimeout(()=>{alert('Xavfsizlik uchun OWNER sessiyasi yopildi.');location.replace('index.html')},15*60*1000);
+const $=id=>document.getElementById(id);
+function getAccounts(){try{const v=JSON.parse(localStorage.getItem('furaTruckAccounts')||'{}');return v&&typeof v==='object'?v:{}}catch{return {}}}
+function normalizeCompanyName(value){return String(value||'').trim().replace(/\s+/g,' ').toLocaleUpperCase('uz-UZ')}
+const enc=new TextEncoder(),dec=new TextDecoder();
+const b64=u=>{let t='';new Uint8Array(u).forEach(x=>t+=String.fromCharCode(x));return btoa(t)};
+const unb64=t=>Uint8Array.from(atob(t),x=>x.charCodeAt(0));
+// OWNER kaliti: faqat ikki bosqichli parol to‘g‘ri kiritilganda login sahifasi uzatadi; xotirada turadi, saqlanmaydi.
+let ownerKey=null;
+const keyReady=(async()=>{try{const raw=sessionStorage.getItem('furaOwnerKey');sessionStorage.removeItem('furaOwnerKey');if(raw)ownerKey=await crypto.subtle.importKey('raw',unb64(raw),'AES-GCM',false,['encrypt','decrypt'])}catch(e){}})();
+async function pwEncrypt(name,pw){if(!ownerKey)return null;const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:enc.encode('firmpw:'+name)},ownerKey,enc.encode(String(pw)));return 'enc1:'+b64(iv)+'.'+b64(ct)}
+async function pwDecrypt(name,blob){const p=blob.slice(5).split('.');return dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(p[0]),additionalData:enc.encode('firmpw:'+name)},ownerKey,unb64(p[1])))}
+function saveAccounts(a){localStorage.setItem('furaTruckAccounts',JSON.stringify(a))}
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+function wipeVehicle(data,v,firmName){delete data[v];localStorage.removeItem('furaVault:'+v);localStorage.removeItem('furaLock:veh:'+firmName+':'+v);for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith(`furaTruck:${v}:`))localStorage.removeItem(k)}}
+async function firmPassword(name,firm){
+  if(firm.password!==undefined)return {ok:true,value:String(firm.password)};
+  if(firm.pwEnc&&ownerKey){try{return {ok:true,value:await pwDecrypt(name,firm.pwEnc)}}catch(e){return {ok:false,note:'Parolni o‘qib bo‘lmadi (OWNER paroli almashtirilgan bo‘lishi mumkin). Yangi parol o‘rnating.'}}}
+  return {ok:false,note:'Eski firma: parol hashlangan, ko‘rsatib bo‘lmaydi. Yangi parol o‘rnating.'}
+}
+const flash={},openFirms=new Set();
+async function renderCompanies(){
+  await keyReady;
+  const accounts=getAccounts(),list=$('companies');list.innerHTML='';
+  const firms=Object.entries(accounts).filter(([,v])=>v&&v.isCompany===true);
+  if(!firms.length){list.textContent='Hozircha firma yaratilmagan.';return}
+  for(const [name,firm] of firms) list.appendChild(await buildFirm(name,firm));
+}
+async function buildFirm(name,firm){
+  const card=el('div','firm-card'),body=el('div','firm-body'),vehicles=Array.isArray(firm.vehicles)?firm.vehicles:[],limit=Number(firm.vehicleLimit||0);
+  const done=text=>{flash[name]=text;renderCompanies()};
+  // sarlavha + o‘chirish
+  const head=el('div','firm-head'),title=el('div','firm-title'),chev=el('span','chev'),open=openFirms.has(name);
+  const setOpen=v=>{if(v)openFirms.add(name);else openFirms.delete(name);body.className=v?'firm-body':'firm-body hidden';chev.textContent=v?'▴':'▾';head.setAttribute&&head.setAttribute('aria-expanded',String(v))};
+  title.append(chev,el('strong','',name),el('small','muted',`${vehicles.length} / ${limit} mashina`));head.append(title);
+  head.addEventListener('click',()=>setOpen(!openFirms.has(name)));
+  const del=el('button','logout mini','Firmani o‘chirish');del.type='button';
+  del.addEventListener('click',ev=>{ev&&ev.stopPropagation&&ev.stopPropagation();if(!confirm(`${name} firmasini va unga tegishli brauzer ma’lumotlarini o‘chirasizmi?`))return;const data=getAccounts(),f=data[name];(f?.vehicles||[]).forEach(v=>wipeVehicle(data,v,name));delete data[name];saveAccounts(data);delete flash[name];renderCompanies()});
+  head.append(del);card.append(head,body);setOpen(open);
+  // parol
+  const pw=await firmPassword(name,firm),pwRow=el('div','firm-row');pwRow.append(el('span','firm-label','Parol:'));
+  if(pw.ok){const val=el('span','pw-value',pw.value);let shown=true;const tg=el('button','logout mini','Yashirish');tg.type='button';tg.addEventListener('click',()=>{shown=!shown;val.textContent=shown?pw.value:'••••••';tg.textContent=shown?'Yashirish':'Ko‘rsatish'});pwRow.append(val,tg)}
+  else pwRow.append(el('span','muted',pw.note));
+  body.append(pwRow);
+  const npRow=el('div','firm-row'),np=el('input');np.type='text';np.placeholder='Yangi parol (kamida 4 ta belgi)';np.maxLength=64;np.autocomplete='off';
+  const npBtn=el('button','mini','Parolni o‘zgartirish');npBtn.type='button';
+  npBtn.addEventListener('click',async()=>{const v=np.value;if(v.length<4){done('Parol kamida 4 ta belgidan iborat bo‘lsin.');return}const data=getAccounts(),f=data[name];if(!f)return;const cred=await makeCredential(v);f.salt=cred.salt;f.passHash=cred.passHash;f.iter=cred.iter;delete f.password;await keyReady;f.pwEnc=await pwEncrypt(name,v);saveAccounts(data);localStorage.removeItem('furaLock:firm:'+normalizeCompanyName(name));done(ownerKey?'Firma paroli yangilandi.':'Parol yangilandi (OWNER kaliti yo‘q, shuning uchun ko‘rsatilmaydi).')});
+  npRow.append(np,npBtn);body.append(npRow);
+  // limit
+  const limRow=el('div','firm-row');limRow.append(el('span','firm-label',`Mashina limiti (qo‘shilgan: ${vehicles.length}):`));
+  const li=el('input');li.type='number';li.min='1';li.max='500';li.step='1';li.value=String(limit);
+  const liBtn=el('button','mini','Limitni saqlash');liBtn.type='button';
+  liBtn.addEventListener('click',()=>{const n=Number(li.value);if(!Number.isInteger(n)||n<1||n>500){done('Limit 1 dan 500 gacha butun son bo‘lsin.');return}const data=getAccounts(),f=data[name];if(!f)return;if(n<(f.vehicles||[]).length){done(`Limit qo‘shilgan mashinalar sonidan (${(f.vehicles||[]).length}) kam bo‘lmasin. Avval mashinani o‘chiring.`);return}f.vehicleLimit=n;saveAccounts(data);done('Mashina limiti yangilandi.')});
+  limRow.append(li,liBtn);body.append(limRow);
+  // mashinalar
+  body.append(el('div','firm-label veh-title','Mashinalar'));
+  if(!vehicles.length)body.append(el('div','muted','Hali mashina qo‘shilmagan.'));
+  vehicles.forEach(v=>{const r=el('div','veh-row');r.append(el('span','veh-plate',v));const rm=el('button','logout mini','O‘chirish');rm.type='button';rm.addEventListener('click',()=>{if(!confirm(`${v} mashinasini va uning barcha ma’lumotlarini o‘chirasizmi?`))return;const data=getAccounts(),f=data[name];if(!f)return;f.vehicles=(f.vehicles||[]).filter(x=>x!==v);wipeVehicle(data,v,name);saveAccounts(data);done(`${v} mashinasi o‘chirildi.`)});r.append(rm);body.append(r)});
+  // mashina qo‘shish
+  const addRow=el('div','firm-row'),pl=el('input'),pp=el('input');pl.type='text';pl.placeholder='Mashina raqami';pl.maxLength=20;pl.autocomplete='off';pp.type='password';pp.placeholder='Mashina paroli (kamida 4)';pp.maxLength=64;pp.autocomplete='new-password';
+  const add=el('button','mini','Mashina qo‘shish');add.type='button';
+  add.addEventListener('click',async()=>{const plate=pl.value.trim().toUpperCase(),pass=pp.value;const data=getAccounts(),f=data[name];if(!f)return;f.vehicles=Array.isArray(f.vehicles)?f.vehicles:[];if(!plate){done('Mashina raqamini kiriting.');return}if(pass.length<4){done('Mashina paroli kamida 4 ta belgidan iborat bo‘lsin.');return}if(f.vehicles.length>=Number(f.vehicleLimit||0)){done(`Mashina limiti tugagan (${f.vehicleLimit} ta). Avval limitni oshiring.`);return}if(data[plate]||Object.keys(data).some(k=>normalizeCompanyName(k)===normalizeCompanyName(plate))){done('Bu raqam allaqachon ishlatilgan.');return}const cred=await makeCredential(pass);data[plate]={salt:cred.salt,passHash:cred.passHash,iter:cred.iter,company:name,createdAt:new Date().toISOString(),model:'',note:''};f.vehicles.push(plate);saveAccounts(data);done(`${plate} mashinasi qo‘shildi.`)});
+  addRow.append(pl,pp,add);body.append(addRow);
+  const msg=el('p','msg',flash[name]||'');body.append(msg);
+  return card;
+}
+$('createCompanyForm').addEventListener('submit',async e=>{e.preventDefault();const name=$('companyName').value.trim().toUpperCase(),password=$('companyPassword').value,limit=Number($('vehicleLimit').value);const msg=$('message');if(name.length<2){msg.textContent='Firma nomini kamida 2 ta belgi bilan kiriting.';return}if(password.length<4){msg.textContent='Parol kamida 4 ta belgidan iborat bo‘lsin.';return}if(!Number.isInteger(limit)||limit<1||limit>500){msg.textContent='Mashina soni 1 dan 500 gacha butun son bo‘lsin.';return}const accounts=getAccounts();if(Object.keys(accounts).some(existing=>normalizeCompanyName(existing)===normalizeCompanyName(name))){msg.textContent='Bu firma nomi oldin yaratilgan.';return}const cred=await makeCredential(password);await keyReady;const pwEnc=await pwEncrypt(name,password);accounts[name]={isCompany:true,pwEnc,role:'company',salt:cred.salt,passHash:cred.passHash,iter:cred.iter,vehicleLimit:limit,vehicles:[],createdAt:new Date().toISOString()};localStorage.setItem('furaTruckAccounts',JSON.stringify(accounts));msg.textContent=`${name} firmasi muvaffaqiyatli yaratildi. Endi login sahifasidan kirish mumkin.`+(pwEnc?'':' (OWNER kaliti yo‘q — parol ro‘yxatda ko‘rsatilmaydi.)');$('createCompanyForm').reset();renderCompanies()});
+$('logout').addEventListener('click',()=>location.replace('index.html'));
+renderCompanies();
+</script>
+</body></html>
