@@ -181,3 +181,6 @@
 .history-head:hover .hchev{background:#d9e4fb}
 .history-sum{flex:1;min-width:0;color:var(--muted,#64748b);font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .history-head>span:last-child{white-space:nowrap;font-weight:700}
+
+/* Server / lokal rejim yozuvi */
+#modeBadge{font-weight:600}.mode-server{color:#16865c!important}.mode-local{color:#b45309!important}

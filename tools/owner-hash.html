@@ -1,22 +1,40 @@
 <!doctype html>
 <html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OWNER parol hash generatori</title>
-<style>body{font-family:Arial,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;color:#17243b}input,button,textarea{font:inherit;width:100%;box-sizing:border-box;padding:12px;margin:8px 0;border:1px solid #d0d8e6;border-radius:8px}button{background:#245cff;color:#fff;border:0;cursor:pointer;font-weight:700}textarea{height:110px;font-family:monospace;font-size:12px}small{color:#667}</style></head>
+<title>FURA SYSTEM — sozlash vositasi</title>
+<style>body{font-family:Arial,sans-serif;max-width:680px;margin:40px auto;padding:0 16px;color:#17243b}input,button,textarea{font:inherit;width:100%;box-sizing:border-box;padding:12px;margin:8px 0;border:1px solid #d0d8e6;border-radius:8px}button{background:#245cff;color:#fff;border:0;cursor:pointer;font-weight:700}textarea{height:90px;font-family:monospace;font-size:12px}small{color:#667}h3{margin-top:34px}</style></head>
 <body>
-<h2>OWNER parol hash generatori</h2>
-<p><small>Bu sahifa faqat o‘zingizning kompyuteringizda ishlaydi (internetga hech narsa yuborilmaydi). Netlify’ga yuklamang — saytning o‘zida kerak emas.</small></p>
-<label>Yangi OWNER paroli (uzun va noyob bo‘lsin, kamida 12 belgi tavsiya etiladi)</label>
-<input id="pw" type="password" autocomplete="new-password">
+<h2>FURA SYSTEM — sozlash vositasi</h2>
+<p><small>Bu sahifa faqat o‘zingizning kompyuteringizda ishlaydi, internetga hech narsa yuborilmaydi. Natijalarni boshqalarga ko‘rsatmang. Netlify’ga yuklamang.</small></p>
+
+<h3>1) OWNER parolini hashlash (server uchun)</h3>
+<p><small>Ikkala OWNER parolini alohida-alohida hashlang. Uzun va noyob parol qo‘ying (kamida 12 belgi tavsiya etiladi). Chiqqan qatorni Netlify’da <code>OWNER_HASH_1</code> (1-parol) va <code>OWNER_HASH_2</code> (2-parol) o‘zgaruvchisiga qo‘ying.</small></p>
+<input id="pw" type="password" autocomplete="new-password" placeholder="OWNER paroli">
 <button id="go" type="button">Hash yaratish</button>
-<label>Natija — <code>script.js</code> boshidagi <code>OWNER_CREDS</code> ro‘yxatiga qo‘ying</label>
+<label>Netlify o‘zgaruvchisi qiymati:</label>
 <textarea id="out" readonly></textarea>
+<label>Faqat lokal rejim uchun (<code>script.js</code> → <code>OWNER_CREDS</code>):</label>
+<textarea id="out2" readonly></textarea>
+
+<h3>2) SESSION_SECRET yaratish</h3>
+<p><small>Netlify’da <code>SESSION_SECRET</code> o‘zgaruvchisiga qo‘yiladigan tasodifiy kalit. Uni hech kimga bermang.</small></p>
+<button id="sec" type="button">Kalit yaratish</button>
+<textarea id="out3" readonly></textarea>
+
+<h3>3) DATA_KEY yaratish</h3>
+<p><small>Netlify’da <code>DATA_KEY</code> o‘zgaruvchisiga qo‘yiladi (64 ta belgi). Mashina ma’lumotlari serverda shu kalit bilan shifrlanadi. <b>Uni yo‘qotsangiz yoki o‘zgartirsangiz, ma’lumotlar o‘qilmay qoladi — nusxasini xavfsiz joyda saqlang.</b></small></p>
+<button id="dk" type="button">Kalit yaratish</button>
+<textarea id="out4" readonly></textarea>
+
 <script>
 const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
 document.getElementById('go').addEventListener('click',async()=>{
-  const pw=document.getElementById('pw').value;if(pw.length<8){document.getElementById('out').value='Parol kamida 8 ta belgi bo‘lsin.';return}
+  const pw=document.getElementById('pw').value;if(pw.length<8){document.getElementById('out').value='Parol kamida 8 ta belgi bo‘lsin.';document.getElementById('out2').value='';return}
   const salt=hex(crypto.getRandomValues(new Uint8Array(16))),enc=new TextEncoder();
   const key=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']);
-  const bits=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:enc.encode(salt),iterations:310000},key,256);
-  document.getElementById('out').value=`{salt:'${salt}',hash:'${hex(bits)}',iter:310000},`;
+  const h=hex(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:enc.encode(salt),iterations:310000},key,256));
+  document.getElementById('out').value=`pbkdf2$310000$${salt}$${h}`;
+  document.getElementById('out2').value=`{salt:'${salt}',hash:'${h}',iter:310000},`;
 });
+document.getElementById('sec').addEventListener('click',()=>{document.getElementById('out3').value=hex(crypto.getRandomValues(new Uint8Array(32)))});
+document.getElementById('dk').addEventListener('click',()=>{document.getElementById('out4').value=hex(crypto.getRandomValues(new Uint8Array(32)))});
 </script></body></html>

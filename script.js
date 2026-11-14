@@ -58,52 +58,100 @@ function askPassword(title){
 }
 // Faol bo‘lmasa 30 daqiqadan keyin avtomatik chiqish.
 let idleTimer=null;
-function logoutNow(){vaultClose();activeTruck='';activeCompany='';clearTimeout(idleTimer);try{location.reload();return}catch(e){}document.getElementById('vehiclePickerModal')?.classList.add('hidden');dashboardPage.classList.add('hidden');loginPage.classList.remove('hidden');}
+function logoutNow(){vaultClose();serverFirm=null;serverVeh=null;activeTruck='';activeCompany='';clearTimeout(idleTimer);try{location.reload();return}catch(e){}document.getElementById('vehiclePickerModal')?.classList.add('hidden');dashboardPage.classList.add('hidden');loginPage.classList.remove('hidden');}
 document.getElementById('logoutBtn')?.addEventListener('click',()=>logoutNow());
 function resetIdle(){clearTimeout(idleTimer);if(!activeTruck)return;idleTimer=setTimeout(()=>{logoutNow();alert('Xavfsizlik uchun faol bo‘lmagan sessiya yopildi. Qayta kiring.')},SEC_IDLE_MS);}
 ['click','keydown','mousemove','touchstart'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
-// ===== MA’LUMOTLARNI SHIFRLASH (AES-256-GCM) =====
-// Mashina ma’lumotlari brauzer xotirasida shifrlangan holda saqlanadi. Kalit mashina parolidan olinadi
-// va faqat sessiya davomida xotirada turadi. Eski (ochiq) ma’lumotlar birinchi kirishda avtomatik shifrlanadi.
-const vault={key:null,plate:'',mem:new Map(),queue:Promise.resolve()};
+// ===== SERVER REJIMI (Netlify Functions + Supabase) =====
+// Server sozlangan bo‘lsa ma’lumotlar serverda saqlanadi (istalgan qurilmadan kirish mumkin).
+// Sozlanmagan bo‘lsa sayt avvalgidek lokal rejimda (faqat shu brauzerda) ishlaydi.
+const API_URL='/.netlify/functions/api';
+let SERVER_MODE=false,serverFirm=null,serverVeh=null;
+const sleepMs=ms=>new Promise(r=>setTimeout(r,ms));
+async function api(action,payload,token){
+  let r,j;
+  try{r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify({action,...(payload||{})})});}
+  catch(e){const err=new Error('Serverga ulanib bo‘lmadi. Internetni tekshiring.');err.network=true;throw err;}
+  try{j=await r.json();}catch(e){const err=new Error('Server javobi noto‘g‘ri.');err.status=r.status;throw err;}
+  if(!r.ok||j.error){const err=new Error(j.error||'Server xatosi.');err.status=r.status;err.locked=!!j.locked;throw err;}
+  return j;
+}
+const modeReady=(async()=>{
+  try{
+    const ctl=typeof AbortController!=='undefined'?new AbortController():null,timer=ctl?setTimeout(()=>ctl.abort(),4000):null;
+    const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ping'}),signal:ctl?ctl.signal:undefined});
+    if(timer)clearTimeout(timer);
+    const j=await r.json();SERVER_MODE=!!(j&&j.ok&&j.configured);
+  }catch(e){SERVER_MODE=false;}
+  const b=document.getElementById('modeBadge');
+  if(b){b.textContent=SERVER_MODE?'Server rejimi: ma’lumotlar serverda saqlanadi, istalgan qurilmadan kirish mumkin.':'Lokal rejim: ma’lumotlar faqat shu brauzerda saqlanadi.';b.className='login-hint mode-'+(SERVER_MODE?'server':'local');}
+})();
+let saveWarned=false;
+function warnOnce(msg){if(saveWarned)return;saveWarned=true;alert(msg);setTimeout(()=>{saveWarned=false},30000);}
+async function serverSaveItem(holder,short,blob){
+  for(let i=0;i<4;i++){
+    try{const r=await api('data-set',{items:[{key:short,value:blob}]},holder.token);if(r.token)holder.token=r.token;return;}
+    catch(e){if(e.status===401||e.status===400){warnOnce('Sessiya tugagan yoki xatolik: ma’lumot saqlanmadi. Qayta kiring.');throw e;}await sleepMs(500*(2**i));}
+  }
+  warnOnce('Ma’lumot serverga saqlanmadi. Internetni tekshiring va qayta urinib ko‘ring.');throw new Error('saqlanmadi');
+}
+async function serverEnterVehicle(plate){
+  const r=await api('vehicle-open',{plate},serverFirm.token);
+  serverVeh={token:r.token,plate:r.vehicle.plate};
+  await vaultOpen(r.vehicle.plate);
+}
+// ===== /SERVER REJIMI =====
+
+// ===== MA’LUMOTLAR OMBORI =====
+// Mashinalarda parol yo‘q: kirish faqat firma paroli bilan. Server rejimida ma’lumot serverda shifrlab saqlanadi (DATA_KEY).
+// Faqat eski (mashina paroli bilan shifrlangan) mahalliy ma’lumotlar bir marta eski parol bilan ochiladi.
+const vault={key:null,plate:'',mem:new Map(),queue:Promise.resolve(),server:false};
 const b64=u=>{let t='';new Uint8Array(u).forEach(x=>t+=String.fromCharCode(x));return btoa(t)};
 const unb64=t=>Uint8Array.from(atob(t),x=>x.charCodeAt(0));
-async function vaultDerive(plate,password){
-  let salt=localStorage.getItem('furaVault:'+plate);
-  if(!salt){salt=toHex(crypto.getRandomValues(new Uint8Array(16)));localStorage.setItem('furaVault:'+plate,salt);}
+async function legacyDerive(salt,password){
   const enc=new TextEncoder();
   const base=await crypto.subtle.importKey('raw',enc.encode(String(password)),'PBKDF2',false,['deriveKey']);
-  return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:enc.encode('vault:'+salt),iterations:SEC_ITER},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:enc.encode('vault:'+salt),iterations:SEC_ITER},base,{name:'AES-GCM',length:256},false,['decrypt']);
 }
-async function vaultEncrypt(key,fullKey,value){
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:new TextEncoder().encode(fullKey)},key,new TextEncoder().encode(String(value)));
-  return 'enc1:'+b64(iv)+'.'+b64(ct);
-}
-async function vaultDecrypt(key,fullKey,blob){
+async function legacyDecrypt(key,fullKey,blob){
   const parts=blob.slice(5).split('.');
   const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(parts[0]),additionalData:new TextEncoder().encode(fullKey)},key,unb64(parts[1]));
   return new TextDecoder().decode(pt);
 }
 function vaultPersist(key,fullKey,value){
-  vault.queue=vault.queue.then(async()=>{localStorage.setItem(fullKey,await vaultEncrypt(key,fullKey,value))}).catch(e=>console.warn('Shifrlab saqlashda xato:',e));
+  const server=vault.server,holder=serverVeh,plate=vault.plate;
+  vault.queue=vault.queue.then(async()=>{
+    if(server) await serverSaveItem(holder,fullKey.slice(`furaTruck:${plate}:`.length),String(value));
+    else localStorage.setItem(fullKey,String(value));
+  }).catch(e=>console.warn('Saqlashda xato:',e));
 }
-function vaultClose(){vault.key=null;vault.plate='';vault.mem=new Map();}
-async function vaultOpen(plate,password){
+function vaultClose(){vault.key=null;vault.plate='';vault.mem=new Map();vault.server=false;}
+async function vaultOpenServer(plate){
+  const r=await api('data-get',{},serverVeh.token);if(r.token)serverVeh.token=r.token;
+  const mem=new Map();
+  for(const it of r.items){ if(typeof it.value==='string') mem.set(it.key,it.value); }
+  vault.key=true;vault.plate=plate;vault.mem=mem;vault.server=true;
+}
+async function vaultOpen(plate){
   vaultClose();
-  const key=await vaultDerive(plate,password),prefix=`furaTruck:${plate}:`,keys=[];
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(prefix))keys.push(k)}
-  const mem=new Map(),migrate=[];let bad=0;
-  for(const k of keys){
-    const raw=localStorage.getItem(k),short=k.slice(prefix.length);
-    if(raw&&raw.startsWith('enc1:')){try{mem.set(short,await vaultDecrypt(key,k,raw))}catch(e){bad++}}
-    else if(raw!==null){mem.set(short,raw);migrate.push([k,raw])}
+  if(SERVER_MODE) return vaultOpenServer(plate);
+  const prefix=`furaTruck:${plate}:`,enc=[];
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(prefix)&&String(localStorage.getItem(k)).startsWith('enc1:'))enc.push(k)}
+  const salt=localStorage.getItem('furaVault:'+plate);
+  if(enc.length&&salt){
+    for(;;){
+      const pw=await askPassword(`${plate}: eski ma’lumotlarni ochish uchun mashinaning ESKI parolini kiriting (bir marta so‘raladi)`);
+      if(pw===null) throw new Error('Eski ma’lumotlar ochilmadi (bekor qilindi).');
+      let key; try{ key=await legacyDerive(salt,pw); await legacyDecrypt(key,enc[0],localStorage.getItem(enc[0])); }catch(e){ alert('Eski parol noto‘g‘ri.'); continue; }
+      let bad=0;
+      for(const k of enc){ try{ localStorage.setItem(k,await legacyDecrypt(key,k,localStorage.getItem(k))); }catch(e){ bad++; } }
+      localStorage.removeItem('furaVault:'+plate);
+      if(bad)alert(`${bad} ta yozuvni o‘qib bo‘lmadi.`);
+      break;
+    }
   }
-  vault.key=key;vault.plate=plate;vault.mem=mem;
-  migrate.forEach(([k,raw])=>vaultPersist(key,k,raw));
-  await vault.queue;
-  if(bad)alert(`${bad} ta yozuvni o‘qib bo‘lmadi (buzilgan yoki o‘zgartirilgan bo‘lishi mumkin). Qolgan ma’lumotlar ochildi.`);
 }
+
 // ===== /SHIFRLASH =====
 
 // ===== /HIMOYA =====
@@ -117,7 +165,7 @@ let activeTruck = '';
 let activeCompany = ''; 
 // Sahifa qayta yuklanganda oldingi dashboard holati tiklanmasin: har safar login sahifasidan boshlanadi.
 window.addEventListener('pageshow',()=>{
-  vaultClose(); activeTruck=''; activeCompany='';
+  vaultClose(); serverFirm=null; serverVeh=null; activeTruck=''; activeCompany='';
   loginPage.classList.remove('hidden');
   dashboardPage.classList.add('hidden');
 });
@@ -138,10 +186,11 @@ function findCompanyAccount(accounts, typedName){
   return entry ? {name:entry[0], data:entry[1]} : null;
 }
 function syncRouteFields(from,to){const tf=document.getElementById('tripFrom'),tt=document.getElementById('tripTo'),cf=document.getElementById('cargoFrom'),ct=document.getElementById('cargoTo');if(tf)tf.value=from;if(tt)tt.value=to;if(cf)cf.value=from;if(ct)ct.value=to;}
+function readVehicleProfile(){try{const p=JSON.parse(getTruckValue('vehicleProfile')||'null');if(p&&typeof p==='object')return p}catch(e){}return truckAccounts()[activeTruck]||{};}
 function loadTruckBasics(){
   document.getElementById('driverNumber').textContent=activeTruck;
   document.getElementById('vehicleNumberDisplay').textContent=activeTruck;
-  const profile=truckAccounts()[activeTruck]||{};
+  const profile=readVehicleProfile();
   document.getElementById('vehicleModel').value=profile.model||'';
   document.getElementById('vehiclePlate').value=activeTruck;
   document.getElementById('vehicleNote').value=profile.note||'';
@@ -155,31 +204,38 @@ function loadTruckBasics(){
 function ensureVehicleModal(){
   if(document.getElementById('vehiclePickerModal')) return;
   const modal=document.createElement('div'); modal.id='vehiclePickerModal'; modal.className='vehicle-modal hidden';
-  modal.innerHTML=`<div class="vehicle-modal-card" role="dialog" aria-modal="true" aria-labelledby="vehicleModalTitle"><button class="vehicle-modal-close" type="button" aria-label="Yopish">×</button><div class="vehicle-modal-icon"><i class="fa-solid fa-truck"></i></div><h2 id="vehicleModalTitle">Mashina tanlash</h2><p class="vehicle-modal-subtitle">Firma parkingizdagi mashinani tanlang yoki yangisini qo‘shing</p><div id="vehicleModalList" class="vehicle-modal-list"></div><div class="vehicle-modal-add"><input id="newVehiclePlate" type="text" placeholder="Yangi mashina raqami"><input id="newVehiclePass" type="password" maxlength="64" placeholder="Mashina paroli (kamida 4 ta)"><button id="addVehicleNow" type="button"><i class="fa-solid fa-plus"></i> Mashina qo‘shish</button></div><p id="vehicleModalMessage" class="vehicle-modal-message"></p></div>`;
+  modal.innerHTML=`<div class="vehicle-modal-card" role="dialog" aria-modal="true" aria-labelledby="vehicleModalTitle"><button class="vehicle-modal-close" type="button" aria-label="Yopish">×</button><div class="vehicle-modal-icon"><i class="fa-solid fa-truck"></i></div><h2 id="vehicleModalTitle">Mashinani tanlang</h2><p class="vehicle-modal-subtitle"></p><div id="vehicleModalList" class="vehicle-modal-list"></div><div class="vehicle-modal-add"><input id="newVehiclePlate" type="text" placeholder="Yangi mashina raqami"><button id="addVehicleNow" type="button"><i class="fa-solid fa-plus"></i> Mashina qo‘shish</button></div><p id="vehicleModalMessage" class="vehicle-modal-message"></p></div>`;
   document.body.appendChild(modal);
   modal.querySelector('.vehicle-modal-close').addEventListener('click',()=>modal.classList.add('hidden'));
   modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.add('hidden')});
   modal.querySelector('#addVehicleNow').addEventListener('click',async()=>{
-    const plate=modal.querySelector('#newVehiclePlate').value.trim().toUpperCase(), pass=modal.querySelector('#newVehiclePass').value;
+    const plate=modal.querySelector('#newVehiclePlate').value.trim().toUpperCase();
     const accounts=truckAccounts(), company=accounts[activeCompany];
     const msg=modal.querySelector('#vehicleModalMessage');
+    if(SERVER_MODE){
+      if(!serverFirm){msg.textContent='Firma ma’lumoti topilmadi. Qayta kiring.';return;}
+      if(!plate){msg.textContent='Mashina raqamini kiriting.';return;}
+      let added;
+      try{const r=await api('firm-add-vehicle',{plate},serverFirm.token);added=r.vehicle;serverFirm.vehicles.push(added);await serverEnterVehicle(added.plate);}
+      catch(err){msg.textContent=err.message;return;}
+      modal.classList.add('hidden');enterTruck(added.plate);return;
+    }
     if(!company||!company.isCompany){msg.textContent='Firma ma’lumoti topilmadi. Qayta kiring.';return;}
     if(!plate){msg.textContent='Mashina raqamini kiriting.';return;}
-    if(pass.length<4){msg.textContent='Mashina paroli kamida 4 ta belgidan iborat bo‘lsin.';return;}
     company.vehicles=Array.isArray(company.vehicles)?company.vehicles:[];
     if(company.vehicles.length>=Number(company.vehicleLimit||0)){msg.textContent=`Mashina limiti tugagan (${company.vehicleLimit} ta).`;return;}
     if(accounts[plate]){msg.textContent='Bu mashina raqami allaqachon ishlatilgan.';return;}
-    const cred=await makeCredential(pass); accounts[plate]={salt:cred.salt,passHash:cred.passHash,iter:cred.iter,company:activeCompany,createdAt:new Date().toISOString(),model:'',note:''}; company.vehicles.push(plate);
-    localStorage.setItem('furaTruckAccounts',JSON.stringify(accounts)); try{await vaultOpen(plate,pass)}catch(err){msg.textContent='Ma’lumotlarni ochib bo‘lmadi: '+err.message;return;} modal.classList.add('hidden'); enterTruck(plate);
+    accounts[plate]={company:activeCompany,createdAt:new Date().toISOString(),model:'',note:''}; company.vehicles.push(plate);
+    localStorage.setItem('furaTruckAccounts',JSON.stringify(accounts)); modal.classList.add('hidden'); enterTruck(plate);
   });
 }
 function renderVehicleModal(){
   ensureVehicleModal(); const modal=document.getElementById('vehiclePickerModal'),list=modal.querySelector('#vehicleModalList'),accounts=truckAccounts(),company=accounts[activeCompany];
-  list.innerHTML=''; const names=(company&&Array.isArray(company.vehicles)?company.vehicles:[]).filter(n=>accounts[n]);
+  list.innerHTML=''; const names=SERVER_MODE&&serverFirm?serverFirm.vehicles.map(v=>v.plate):(company&&Array.isArray(company.vehicles)?company.vehicles:[]).filter(n=>accounts[n]);
   if(!names.length){const empty=document.createElement('div');empty.className='vehicle-modal-empty';empty.textContent='Hali mashina qo‘shilmagan. Quyidan birinchi mashinani qo‘shing.';list.appendChild(empty)}
-  names.forEach(name=>{const item=document.createElement('button');item.type='button';item.className='vehicle-option';item.innerHTML='<i class="fa-solid fa-truck-fast"></i><span></span><i class="fa-solid fa-chevron-right"></i>';item.querySelector('span').textContent=name;item.addEventListener('click',async()=>{const msgEl=modal.querySelector('#vehicleModalMessage'),lk='veh:'+activeCompany+':'+name;const w=lockRemaining(lk);if(w){msgEl.textContent=lockText(w);return}const pass=await askPassword(`${name} mashina parolini kiriting`);if(pass===null)return;let ok=false;try{ok=await verifyAndUpgrade(truckAccounts(),name,pass)}catch(err){msgEl.textContent=err.message;return}if(!ok){registerFail(lk);msgEl.textContent='Mashina paroli noto‘g‘ri.';return}clearFails(lk);try{await vaultOpen(name,pass)}catch(err){msgEl.textContent='Ma’lumotlarni ochib bo‘lmadi: '+err.message;return}modal.classList.add('hidden');enterTruck(name)});list.appendChild(item)});
-  const limit=Number(company?.vehicleLimit||0);modal.querySelector('.vehicle-modal-subtitle').textContent=`${names.length} / ${limit} ta mashina qo‘shilgan`;
-  modal.querySelector('#vehicleModalMessage').textContent='';modal.querySelector('#newVehiclePlate').value='';modal.querySelector('#newVehiclePass').value='';modal.classList.remove('hidden');
+  names.forEach(name=>{const item=document.createElement('button');item.type='button';item.className='vehicle-option';item.innerHTML='<i class="fa-solid fa-truck-fast"></i><span></span><i class="fa-solid fa-chevron-right"></i>';item.querySelector('span').textContent=name;item.addEventListener('click',async()=>{const msgEl=modal.querySelector('#vehicleModalMessage');msgEl.textContent='';try{if(SERVER_MODE)await serverEnterVehicle(name);else await vaultOpen(name)}catch(err){msgEl.textContent=err.message;return}modal.classList.add('hidden');enterTruck(name)});list.appendChild(item)});
+  const limit=SERVER_MODE&&serverFirm?serverFirm.limit:Number(company?.vehicleLimit||0);modal.querySelector('.vehicle-modal-subtitle').textContent=`${names.length} / ${limit} ta mashina qo‘shilgan`;
+  modal.querySelector('#vehicleModalMessage').textContent='';modal.querySelector('#newVehiclePlate').value='';modal.classList.remove('hidden');
 }
 document.getElementById('vehiclePickerBtn')?.addEventListener('click',renderVehicleModal);
 function enterTruck(number){
@@ -202,6 +258,16 @@ loginForm.addEventListener('submit', async (event) => {
   const password=document.getElementById('password').value;
   const accounts=truckAccounts();
   if(!number||!password){alert('Firma nomi va parolni kiriting.');return;}
+  await modeReady;
+  if(SERVER_MODE){
+    try{
+      const r=await api('firm-login',{name:number,password});
+      serverFirm={token:r.token,name:r.firm.name,limit:r.firm.limit,vehicles:r.vehicles};
+      activeCompany=r.firm.name;document.getElementById('password').value='';
+      renderVehicleModal();
+    }catch(err){alert(err.message||'Kirishda xatolik.');}
+    return;
+  }
   const lockKey='firm:'+normalizeCompanyName(number);
   const wait=lockRemaining(lockKey);
   if(wait){alert(lockText(wait));return;}
@@ -342,7 +408,7 @@ document.getElementById('vehicleForm').addEventListener('submit', (event) => {
   const plate = document.getElementById('vehiclePlate').value.trim();
   document.getElementById('vehicleSaved').textContent = `Ma’lumot saqlandi: ${model || 'Model kiritilmagan'} · ${plate || 'Raqam kiritilmagan'}`;
   if (plate) document.getElementById('vehicleNumberDisplay').textContent = plate;
-  const accounts=truckAccounts(); if(accounts[activeTruck]){accounts[activeTruck].model=model;accounts[activeTruck].note=document.getElementById('vehicleNote').value.trim();localStorage.setItem('furaTruckAccounts',JSON.stringify(accounts));}
+  setTruckValue('vehicleProfile',JSON.stringify({model,note:document.getElementById('vehicleNote').value.trim()}));
 });
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
@@ -746,7 +812,7 @@ function renderGarageSummary(){
   const changed=getTruckValue('furaSmaskaChangedDate');
   let smaska='Smaska sanasi kiritilmagan';
   if(changed){const due=parseLocalDate(changed);due.setDate(due.getDate()+SMASKA_DAYS);const today=new Date();today.setHours(0,0,0,0);smaska=`Almashtirilgan: ${safeText(changed)} · Tugash sanasi: ${safeText(dateToLocalInput(due))} · ${Math.ceil((due-today)/86400000)} kun qoldi`;}
-  const accounts=truckAccounts(),profile=accounts[activeTruck]||{};
+  const profile=readVehicleProfile();
   const expenses=(label,arr)=>`<h4>${label}</h4>${arr.length?'<ul>'+arr.slice(0,12).map(x=>`<li>${safeText(x.date)} · ${safeText(x.location||((x.from||'')+' → '+(x.to||'')))} · ${safeText(fmtMoney(x.amount,x.currency))} (≈ ${safeText(fmtMoney(x.amountUsd,'USD'))})${x.liters?` · ${safeText(x.liters)} litr`:''}</li>`).join('')+'</ul>':'<p class="garage-muted">Hozircha ma’lumot yo‘q.</p>'}`;
   document.getElementById('garageSummaryContent').innerHTML=`<div class="garage-summary-grid"><div><h4>Mashina</h4><p><b>Raqam:</b> ${safeText(activeTruck)}</p><p><b>Model:</b> ${safeText(profile.model)}</p><p><b>Izoh:</b> ${safeText(profile.note)}</p></div><div><h4>Yo‘nalish</h4><p><b>Qayerdan:</b> ${safeText(route&&route.from)}</p><p><b>Qayerga:</b> ${safeText(route&&route.to)}</p><p><b>Yuk:</b> ${safeText(route&&route.cargo)}</p></div><div><h4>Remont / smaska</h4><p>${smaska}</p></div></div>${expenses('Dizel / solyarka',diesel)}${expenses('Platon',platon)}${expenses('Yuk narxi',cargo)}`;
 }
@@ -812,8 +878,13 @@ let salaryRouteCount=1;document.getElementById('addSalaryRoute')?.addEventListen
     const lk='owner'; const w=lockRemaining(lk);
     if(w){alert(lockText(w));return;}
     const ownerPws=[];
+    await modeReady;
     try{
-      for(let i=0;i<OWNER_CREDS.length;i++){
+      if(SERVER_MODE){
+        for(let i=0;i<2;i++){const pw=await askPassword(`OWNER — ${i+1}-bosqich parolini kiriting`);if(pw===null)return;ownerPws.push(pw);}
+        const r=await api('owner-login',{p1:ownerPws[0],p2:ownerPws[1]});
+        sessionStorage.setItem('furaOwnerToken',r.token);
+      } else for(let i=0;i<OWNER_CREDS.length;i++){
         const pw=await askPassword(`OWNER — ${i+1}-bosqich parolini kiriting`);
         if(pw===null) return;
         if(!safeEqual(await hashSecret(pw,OWNER_CREDS[i].salt,OWNER_CREDS[i].iter||150000),OWNER_CREDS[i].hash)){registerFail(lk);alert(`${i+1}-bosqich paroli noto‘g‘ri.`);return;}
