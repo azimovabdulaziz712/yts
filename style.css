@@ -174,7 +174,7 @@
 .logout-btn+.sidebar-bottom{margin-top:0}
 @media(max-width:700px){.logout-btn{display:inline-flex;margin:8px 3px 0 0;padding:11px;font-size:11px}}
 
-/* Eski reyslar: yig'iladigan kartalar */
+/* Eski reyslar: yig'iladigan kartalar */ 
 .history-head{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;margin-bottom:0}
 .history-body{margin-top:14px}
 .hchev{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:6px;background:#e9eef8;color:#245cff;font-size:12px;flex-shrink:0}
