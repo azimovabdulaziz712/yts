@@ -35,3 +35,4 @@ eski parol so'raladi (bekor qilsangiz o'sha mashinaning ma'lumotlari ko'chmaydi)
 - Eski lokal mashina ma'lumotlari shifrlangan bo'lsa, mashinaga birinchi kirishda eski parol bir marta so'raladi.
 - Firma paroli bilmaydigan odam mashinalarga kira olmaydi; firma parolini kuchli qiling.
 - Bu kod haqiqiy Supabase va haqiqiy brauzerda sinalmagan, faqat simulyatsiyada tekshirilgan: birinchi ishga tushirishda hammasini sinab ko'ring.
+ 
