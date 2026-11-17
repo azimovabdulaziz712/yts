@@ -8,7 +8,7 @@ istalgan kompyuter va telefondan bir xil ko'rinadi.
 2. Tugmani bosganda mashinaga **parol so'ralmasdan** kiriladi. Mashinalarda parol yo'q.
 3. Himoya firma paroli, serverdagi urinishlarni cheklash va serverdagi shifrlashga tayanadi.
 
-## 1. Supabase
+## 1. Supabase    
 1. supabase.com da loyiha oching.
 2. SQL Editor → `supabase/schema.sql` faylini to'liq tashlab, **bir marta** bajaring.
 3. Project Settings → API: `Project URL` va `service_role` kalitini oling (service_role kalitini hech kimga bermang).
