@@ -837,10 +837,10 @@ document.getElementById('oilResetBtn')?.addEventListener('click',()=>{
   setTruckValue('oilGarageCount','0');
   document.getElementById('oilNotice')?.remove();
   renderOil();
-  alert('Moy almashtirilgani saqlandi. Hisob 0 dan boshlandi.');
+  alert('Moy almashtirilgani saqlandi. Hisob 0 dan boshlandi.'); 
 });
-
-// Kalodka: foydalanuvchi muddatni kunlarda belgilaydi.
+ 
+// Kalodka: foydalanuvchi m uddatni kunlarda belgilaydi.
 function renderKalod(){const date=getTruckValue('kalodChangedDate'),days=parseInt(getTruckValue('kalodDurationDays')||'',10),card=document.getElementById('kalodCard');if(!card)return;const changedEl=document.getElementById('kalodChanged'),dueEl=document.getElementById('kalodDue'),remainingEl=document.getElementById('kalodRemaining'),badge=document.getElementById('kalodBadge');card.classList.remove('warning','danger');if(!date||!Number.isFinite(days)||days<1){changedEl.textContent=date||'—';dueEl.textContent='—';remainingEl.textContent='Muddatni kiriting';badge.textContent='Sozlanmagan';return;}const due=parseLocalDate(date);due.setDate(due.getDate()+days);const today=new Date();today.setHours(0,0,0,0);const left=Math.ceil((due-today)/86400000);dueEl.textContent=dateToLocalInput(due);remainingEl.textContent=left<0?`${Math.abs(left)} kun o‘tgan`:left===0?'Bugun tugaydi':`${left} kun`;changedEl.textContent=date;badge.textContent=left<=0?'Almashtirish kerak':`${days} kunlik`;if(left<=0)card.classList.add('danger');else if(left<=3)card.classList.add('warning');}
 document.getElementById('kalodForm')?.addEventListener('submit',e=>{e.preventDefault();const date=document.getElementById('kalodDate').value,days=document.getElementById('kalodDays').value;if(!date||!days||Number(days)<1)return;setTruckValue('kalodChangedDate',date);setTruckValue('kalodDurationDays',String(Number(days)));renderKalod();});
 // Garaj va 1-reys: barcha ma’lumotlar mashina raqami bo‘yicha alohida saqlanadi.
