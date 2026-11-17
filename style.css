@@ -202,3 +202,7 @@
 .login-owner-btn,.topbar .login-owner-btn{background:transparent!important;border:none!important;box-shadow:none!important;color:#000!important;width:100px;min-width:100px;height:38px;padding:0!important;font-size:11px!important;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 .login-owner-btn i{display:none}
 @media(max-width:700px){.login-owner-btn{width:100px;min-width:100px}.topbar nav>.login-owner-btn{display:inline-flex!important}}
+#adblueCard .smaska-title{margin-bottom:22px}
+#adblueCard .smaska-title p{margin-bottom:6px}
+#adblueCard .expense-form{margin-top:10px}
+.login-owner-btn,.topbar .login-owner-btn{color:#fff!important}

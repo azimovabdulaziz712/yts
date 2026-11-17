@@ -611,7 +611,7 @@ document.getElementById('paymentReport')?.addEventListener('click',e=>{
   const id=btn.dataset.id;setTruckValue('furaPaymentExpenses',JSON.stringify(readExpense('furaPaymentExpenses').filter(x=>String(x.savedAt)!==id)));
   renderPayments();renderOverall();
 });
-// ===== Adbluek =====
+// ===== Adblok =====
 fillCurrencySelect('adbCurrency');
 document.getElementById('adbAmount')?.addEventListener('input',()=>previewMoney('adbAmount','adbCurrency','adbConversion'));
 document.getElementById('adbCurrency')?.addEventListener('change',()=>previewMoney('adbAmount','adbCurrency','adbConversion'));
@@ -626,14 +626,14 @@ document.getElementById('adblueForm')?.addEventListener('submit',async e=>{
 });
 document.getElementById('adblueReport')?.addEventListener('click',e=>{
   const btn=e.target.closest('.adb-del'); if(!btn) return;
-  if(!confirm('Bu Adbluek yozuvini o‘chirasizmi?')) return;
+  if(!confirm('Bu Adblok yozuvini o‘chirasizmi?')) return;
   const id=btn.dataset.id;setTruckValue('furaAdblueExpenses',JSON.stringify(readExpense('furaAdblueExpenses').filter(x=>String(x.savedAt)!==id)));
   renderAdblue();
 });
 function renderAdblue(){
   const box=document.getElementById('adblueReport'); if(!box) return;
   const recs=readExpense('furaAdblueExpenses');
-  if(!recs.length){box.innerHTML='<div class="empty-report">Hozircha Adbluek yozuvi yo‘q.</div>';return;}
+  if(!recs.length){box.innerHTML='<div class="empty-report">Hozircha Adblok yozuvi yo‘q.</div>';return;}
   const usd=recs.reduce((sum,x)=>sum+(Number(x.amountUsd)||0),0),lit=recs.reduce((sum,x)=>sum+(Number(x.liters)||0),0);
   const left=x=>{if(!x.endDate)return '';const d=Math.ceil((parseLocalDate(x.endDate)-new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()))/86400000);return d>=0?`${d} kun qoldi`:`${-d} kun oldin tugagan`};
   const rows=recs.map(x=>`<tr><td>${escapeHtml(x.date||'')}</td><td>${escapeHtml(x.endDate||'—')}<span class="report-subline">${escapeHtml(left(x))}</span></td><td>${Number(x.liters).toLocaleString('uz-UZ')} litr</td><td>${escapeHtml(x.place||'—')}</td><td><strong>${escapeHtml(fmtMoney(x.amount,x.currency))}</strong><span class="report-subline">≈ ${escapeHtml(fmtMoney(x.amountUsd,'USD'))}</span></td><td><button type="button" class="report-btn adb-del" data-id="${escapeHtml(String(x.savedAt))}">O‘chirish</button></td></tr>`).join('');
@@ -837,10 +837,10 @@ document.getElementById('oilResetBtn')?.addEventListener('click',()=>{
   setTruckValue('oilGarageCount','0');
   document.getElementById('oilNotice')?.remove();
   renderOil();
-  alert('Moy almashtirilgani saqlandi. Hisob 0 dan boshlandi.'); 
+  alert('Moy almashtirilgani saqlandi. Hisob 0 dan boshlandi.');
 });
- 
-// Kalodka: foydalanuvchi m uddatni kunlarda belgilaydi.
+
+// Kalodka: foydalanuvchi muddatni kunlarda belgilaydi.
 function renderKalod(){const date=getTruckValue('kalodChangedDate'),days=parseInt(getTruckValue('kalodDurationDays')||'',10),card=document.getElementById('kalodCard');if(!card)return;const changedEl=document.getElementById('kalodChanged'),dueEl=document.getElementById('kalodDue'),remainingEl=document.getElementById('kalodRemaining'),badge=document.getElementById('kalodBadge');card.classList.remove('warning','danger');if(!date||!Number.isFinite(days)||days<1){changedEl.textContent=date||'—';dueEl.textContent='—';remainingEl.textContent='Muddatni kiriting';badge.textContent='Sozlanmagan';return;}const due=parseLocalDate(date);due.setDate(due.getDate()+days);const today=new Date();today.setHours(0,0,0,0);const left=Math.ceil((due-today)/86400000);dueEl.textContent=dateToLocalInput(due);remainingEl.textContent=left<0?`${Math.abs(left)} kun o‘tgan`:left===0?'Bugun tugaydi':`${left} kun`;changedEl.textContent=date;badge.textContent=left<=0?'Almashtirish kerak':`${days} kunlik`;if(left<=0)card.classList.add('danger');else if(left<=3)card.classList.add('warning');}
 document.getElementById('kalodForm')?.addEventListener('submit',e=>{e.preventDefault();const date=document.getElementById('kalodDate').value,days=document.getElementById('kalodDays').value;if(!date||!days||Number(days)<1)return;setTruckValue('kalodChangedDate',date);setTruckValue('kalodDurationDays',String(Number(days)));renderKalod();});
 // Garaj va 1-reys: barcha ma’lumotlar mashina raqami bo‘yicha alohida saqlanadi.

@@ -14,7 +14,7 @@ create table if not exists public.fura_firms (
   vehicle_limit integer not null default 1 check (vehicle_limit between 0 and 10000),
   created_at timestamptz not null default now()
 );
-    
+
 create table if not exists public.fura_vehicles (
   id uuid primary key default gen_random_uuid(),
   firm_id uuid not null references public.fura_firms(id) on delete cascade,

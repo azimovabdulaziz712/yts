@@ -134,7 +134,7 @@
             <div class="repair-price"><label for="oilPrice">Kastrol moyi narxi ($)</label><input id="oilPrice" type="number" min="0" step="0.01" value="310"><label for="oilServicePrice">Moy almashtirish xizmati ($)</label><input id="oilServicePrice" type="number" min="0" step="0.01" value="0"><label for="oilDescription">Moy nomi va miqdori</label><input id="oilDescription" type="text" value="Kastrol 10x40 40 litr 310 $"></div><div class="oil-reset-row"><button id="oilResetBtn" class="primary-btn" type="button"><i class="fa-solid fa-rotate"></i> Moy almashtirildi — hisobni yangilash</button><span class="oil-changed-date">Oxirgi almashtirilgan sana: <strong id="oilChangedDate">—</strong></span></div><div class="repair-note-box" data-note-key="oilNote"><button type="button" class="report-btn repair-note-toggle"><i class="fa-solid fa-pen"></i> Yozish</button><div class="repair-note-field hidden"><input type="text" class="repair-note-input" maxlength="500" placeholder="Ma’lumot yozing..."><small class="repair-note-saved"></small></div></div>
           </article>
           <article id="adblueCard" class="smaska-card">
-            <div class="smaska-title"><span class="smaska-icon"><i class="fa-solid fa-flask"></i></span><div><h2>Adbluek</h2><p>Qachon, qayerda, necha litr va qancha pulga quyilgani</p></div></div>
+            <div class="smaska-title"><span class="smaska-icon"><i class="fa-solid fa-flask"></i></span><div><h2>Adblok</h2><p>Qachon, qayerda, necha litr va qancha pulga quyilgani</p></div></div>
             <form id="adblueForm" class="expense-form">
               <label for="adbLiters">Necha litr quyildi?</label><input id="adbLiters" type="number" min="0.1" step="0.1" placeholder="Masalan: 20" required>
               <label for="adbPlace">Qayerda quyildi?</label><input id="adbPlace" type="text" placeholder="Shahar yoki zapravka nomi" required maxlength="120" autocomplete="off">
@@ -142,7 +142,7 @@
               <div id="adbConversion" class="currency-preview">Dollar va so‘mdagi qiymat kurs asosida chiqadi.</div>
               <label for="adbDate">Qachon quyildi?</label><input id="adbDate" type="date" required>
               <label for="adbEnd">Qachon tugaydi?</label><input id="adbEnd" type="date">
-              <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Adbluekni saqlash</button>
+              <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Adblokni saqlash</button>
             </form>
             <p id="adbSaved" class="expense-feedback"></p>
             <div id="adblueReport"></div>
@@ -255,4 +255,4 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
-</html>   
+</html>

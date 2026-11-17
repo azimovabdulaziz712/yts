@@ -12,7 +12,7 @@ function db() {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
   _db = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
   return _db;
-}     
+}
 const secret = () => process.env.SESSION_SECRET || '';
 const dataKey = () => { const k = process.env.DATA_KEY || ''; return /^[0-9a-fA-F]{64}$/.test(k) ? Buffer.from(k, 'hex') : null; };
 const configured = () => !!db() && secret().length >= 32 && !!dataKey();
