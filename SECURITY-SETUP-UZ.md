@@ -26,9 +26,8 @@ istalgan kompyuter va telefondan bir xil ko'rinadi.
 3. Qayta deploy qiling. Kirish sahifasidagi yozuvda "Server rejimi" ko'rinishi kerak.
 
 ## 4. Eski ma'lumotlarni ko'chirish
-Eski (lokal) firmalar yaratilgan **o'sha brauzerda** `owner.html` ga kiring → "Serverga ko'chirish".
-Eski mashinalarning ma'lumotlari eski mashina paroli bilan shifrlangan edi: ko'chirish paytida har bir mashina uchun
-eski parol so'raladi (bekor qilsangiz o'sha mashinaning ma'lumotlari ko'chmaydi). Firmalarning eski parollari o'zgarmaydi.
+Eski (lokal) firmalar yaratilgan **o'sha brauzerda** login sahifasidagi OWNER tugmasi orqali `owner.html` ga kiring → "Serverga ko'chirish".
+Eski mashina ma'lumotlari uchun eski mashina paroli bir marta so'raladi (bekor qilsangiz o'sha mashina ma'lumotlari ko'chmaydi).
 
 ## Eslatmalar
 - Lokal rejimda (server yo'q) ma'lumotlar brauzerda **shifrlanmasdan** saqlanadi va faqat shu brauzerda ko'rinadi.

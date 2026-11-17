@@ -12,7 +12,7 @@
 </script>
 </head>
 <body>
-<main class="wrap">
+<main class="wrap" id="ownerPanel">
   <div class="brand">FURA SYSTEM / CONTROL CENTER</div>
   <div class="head"><div><h1>OWNER kabineti</h1><div class="muted">Yangi firma akkauntini yaratish va mashina limitini belgilash</div></div><button class="logout" id="logout" type="button">Chiqish</button></div>
   <div id="ownerMode" class="muted" style="margin-bottom:14px"></div>
@@ -30,7 +30,7 @@
     </form>
   </section>
   <section class="card company-list"><h2>Yaratilgan firmalar</h2><div id="companies" class="muted">Hozircha firma yo‘q.</div></section>
-  <section class="card company-list hidden" id="importCard"><h2>Eski ma’lumotlarni serverga ko‘chirish</h2><div class="muted">Shu brauzerda (lokal rejimda) yaratilgan firmalar, mashinalar va ma’lumotlarni serverga ko‘chiradi. Serverda bor firmalar o‘tkazib yuboriladi. Ko‘chirilgandan keyin ham lokal nusxa o‘chirilmaydi.</div><button id="importBtn" type="button" class="create" style="margin-top:14px">Serverga ko‘chirish</button><div id="importReport" class="muted" style="margin-top:12px"></div></section>
+  <section class="card company-list hidden" id="importCard"><h2>Eski ma’lumotlarni serverga ko‘chirish</h2><div class="muted">Shu brauzerda (lokal rejimda) yaratilgan firmalar, mashinalar va ma’lumotlarni serverga ko‘chiradi. Serverda bor firmalar o‘tkazib yuboriladi.</div><button class="create" id="importBtn" type="button" style="margin-top:12px">Serverga ko‘chirish</button><div id="importReport" class="muted" style="margin-top:10px"></div></section>
 </main>
 <script>
 function toHex(b){return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
