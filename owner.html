@@ -31,7 +31,7 @@
   </section>
   <section class="card company-list"><h2>Yaratilgan firmalar</h2><div id="companies" class="muted">Hozircha firma yo‘q.</div></section>
   <section class="card company-list hidden" id="importCard"><h2>Eski ma’lumotlarni serverga ko‘chirish</h2><div class="muted">Shu brauzerda (lokal rejimda) yaratilgan firmalar, mashinalar va ma’lumotlarni serverga ko‘chiradi. Serverda bor firmalar o‘tkazib yuboriladi. Ko‘chirilgandan keyin ham lokal nusxa o‘chirilmaydi.</div><button id="importBtn" type="button" class="create" style="margin-top:14px">Serverga ko‘chirish</button><div id="importReport" class="muted" style="margin-top:12px"></div></section>
-</main> 
+</main>
 <script>
 function toHex(b){return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function hashSecret(secret,salt,iter=150000){const enc=new TextEncoder();const key=await crypto.subtle.importKey('raw',enc.encode(String(secret)),'PBKDF2',false,['deriveBits']);return toHex(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:enc.encode(salt),iterations:iter},key,256))}

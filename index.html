@@ -133,6 +133,20 @@
             <p id="oilHint" class="smaska-hint">Har safar “Garajga keldi” tugmasi bosilganda hisob oshadi. 2-marta qizil ogohlantirish, 3-martada sayt ichida eslatma chiqadi.</p>
             <div class="repair-price"><label for="oilPrice">Kastrol moyi narxi ($)</label><input id="oilPrice" type="number" min="0" step="0.01" value="310"><label for="oilServicePrice">Moy almashtirish xizmati ($)</label><input id="oilServicePrice" type="number" min="0" step="0.01" value="0"><label for="oilDescription">Moy nomi va miqdori</label><input id="oilDescription" type="text" value="Kastrol 10x40 40 litr 310 $"></div><div class="oil-reset-row"><button id="oilResetBtn" class="primary-btn" type="button"><i class="fa-solid fa-rotate"></i> Moy almashtirildi — hisobni yangilash</button><span class="oil-changed-date">Oxirgi almashtirilgan sana: <strong id="oilChangedDate">—</strong></span></div><div class="repair-note-box" data-note-key="oilNote"><button type="button" class="report-btn repair-note-toggle"><i class="fa-solid fa-pen"></i> Yozish</button><div class="repair-note-field hidden"><input type="text" class="repair-note-input" maxlength="500" placeholder="Ma’lumot yozing..."><small class="repair-note-saved"></small></div></div>
           </article>
+          <article id="adblueCard" class="smaska-card">
+            <div class="smaska-title"><span class="smaska-icon"><i class="fa-solid fa-flask"></i></span><div><h2>Adbluek</h2><p>Qachon, qayerda, necha litr va qancha pulga quyilgani</p></div></div>
+            <form id="adblueForm" class="expense-form">
+              <label for="adbLiters">Necha litr quyildi?</label><input id="adbLiters" type="number" min="0.1" step="0.1" placeholder="Masalan: 20" required>
+              <label for="adbPlace">Qayerda quyildi?</label><input id="adbPlace" type="text" placeholder="Shahar yoki zapravka nomi" required maxlength="120" autocomplete="off">
+              <label for="adbAmount">Narxi va valyuta</label><div class="money-input-row"><input id="adbAmount" type="number" min="0.01" step="0.01" placeholder="Summa" required><select id="adbCurrency"></select></div>
+              <div id="adbConversion" class="currency-preview">Dollar va so‘mdagi qiymat kurs asosida chiqadi.</div>
+              <label for="adbDate">Qachon quyildi?</label><input id="adbDate" type="date" required>
+              <label for="adbEnd">Qachon tugaydi?</label><input id="adbEnd" type="date">
+              <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Adbluekni saqlash</button>
+            </form>
+            <p id="adbSaved" class="expense-feedback"></p>
+            <div id="adblueReport"></div>
+          </article>
           <article id="smaskaCard" class="smaska-card">
             <div class="smaska-title"><span class="smaska-icon"><i class="fa-solid fa-oil-can"></i></span><div><h2>Smaska</h2><p>Almashtirish muddati: har 25 kunda</p></div><span id="smaskaBadge" class="smaska-badge">Nazoratda</span></div>
             <div class="smaska-dates">
@@ -169,7 +183,7 @@
         <div class="expense-intro"><div><p class="eyebrow">REYSLAR BO‘YICHA UMUMIY HISOB</p><h2>Obshiy rasxod</h2><p>Har bir xarajat alohida bo‘limda saqlanadi. Jami qiymat dollar hisobida ko‘rsatiladi.</p></div></div>
         <article class="panel expense-card profit-top"><div class="section-heading"><div><h3>💰 Foyda</h3><p>Har bir reys: yuk narxi − rasxod = foyda (USD)</p></div></div><div id="tripProfitSummary"></div></article>
         <div class="overall-category-grid">
-          <article class="panel expense-card overall-category-card"><div class="section-heading"><div><h3>🍽️ Yeb-ichish</h3><p>Ovqat va kundalik ehtiyoj xarajatlari</p></div></div><form class="expense-form overall-category-form" data-category="Yeb-ichish"><label>Reys raqami</label><input name="trip" type="number" min="1" value="1" required><label>Qayerda / izoh</label><input name="place" placeholder="Shahar yoki izoh" required><label>Summa va valyuta</label><div class="money-input-row"><input name="amount" type="number" min="0.01" step="0.01" required><select name="currency"><option value="USD">Dollar</option><option value="UZS">So‘m</option><option value="CNY">Yuan</option><option value="KZT">Tenge</option><option value="RUB">Rubl</option></select></div><label>Sana</label><input name="date" type="date" required><button class="primary-btn" type="submit">Yeb-ichish xarajatini saqlash</button></form><div class="overall-category-report" data-report-category="Yeb-ichish"></div></article>
+          <article class="panel expense-card overall-category-card"><div class="section-heading"><div><h3>🍽️ Yeb-ichish</h3><p>Ovqat va kundalik ehtiyoj xarajatlari</p></div></div><form class="expense-form overall-category-form" data-category="Yeb-ichish"><label>Qayerda / izoh</label><input name="place" placeholder="Shahar yoki izoh" required><label>Summa va valyuta</label><div class="money-input-row"><input name="amount" type="number" min="0.01" step="0.01" required><select name="currency"><option value="USD">Dollar</option><option value="UZS">So‘m</option><option value="CNY">Yuan</option><option value="KZT">Tenge</option><option value="RUB">Rubl</option></select></div><label>Sana</label><input name="date" type="date" required><button class="primary-btn" type="submit">Yeb-ichish xarajatini saqlash</button></form><div class="overall-category-report" data-report-category="Yeb-ichish"></div></article>
         </div>
         <article class="panel expense-card"><div id="overallSummary"></div></article>
       </section>
@@ -225,9 +239,9 @@
                 <label for="platonDate">Sana</label><input id="platonDate" type="date" required>
                 <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Platon to‘lovini saqlash</button>
                 <button class="report-btn" type="button" data-report="platon"><i class="fa-solid fa-file-lines"></i> Hisobot</button>
-              </form> 
+              </form>
             </article>
-          </div>  
+          </div>
           <div class="expense-grid"><article class="panel expense-card"><h3>Platon — Xitoy</h3><form id="platonChinaForm" class="expense-form"><label>To‘lov miqdori</label><div class="money-input-row"><input id="platonChinaAmount" type="number" min="0.01" step="0.01" required><select id="platonChinaCurrency"><option value="CNY">Yuan</option><option value="USD">Dollar</option><option value="UZS">So‘m</option><option value="KZT">Tenge</option><option value="RUB">Rubl</option></select></div><label>Yo‘l / punkt</label><input id="platonChinaLocation" required><label>Sana</label><input id="platonChinaDate" type="date" required><button class="primary-btn">Xitoy Platonini saqlash</button></form></article><article class="panel expense-card"><h3>Platon — Rossiya</h3><form id="platonRussiaForm" class="expense-form"><label>To‘lov miqdori</label><div class="money-input-row"><input id="platonRussiaAmount" type="number" min="0.01" step="0.01" required><select id="platonRussiaCurrency"><option value="RUB">Rubl</option><option value="USD">Dollar</option><option value="UZS">So‘m</option><option value="CNY">Yuan</option><option value="KZT">Tenge</option></select></div><label>Yo‘l / punkt</label><input id="platonRussiaLocation" required><label>Sana</label><input id="platonRussiaDate" type="date" required><button class="primary-btn">Rossiya Platonini saqlash</button></form></article></div>
           <section id="expenseReport" class="panel expense-report hidden">
             <div class="section-heading"><div><h3 id="reportTitle">Hisobot</h3><p>Saqlangan yozuvlar</p></div><button id="closeReport" class="close-report" type="button">Yopish ✕</button></div>
@@ -237,8 +251,8 @@
         </div>
       </section>
     </main>
-  </section> 
+  </section>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
-</body> 
-</html> 
+</body>
+</html>
