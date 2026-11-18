@@ -4,9 +4,9 @@
 import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 
-let _db = null;
-export function __setDb(d) { _db = d; }
-function db() {
+let _db = null; 
+export function __setDb(d) { _db = d; } 
+function db() { 
   if (_db) return _db;
   const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
