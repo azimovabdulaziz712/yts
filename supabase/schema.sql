@@ -6,9 +6,9 @@
 create extension if not exists pgcrypto;
 
 create table if not exists public.fura_firms (
-  id uuid primary key default gen_random_uuid(),
+  id uuid primary key default gen_random_uuid(), 
   name text not null,
-  name_norm text not null unique,
+  name_norm text not null unique, 
   pass_hash text not null,
   pw_enc text,                              -- OWNER ko'rishi uchun shifrlangan parol (kalit faqat OWNER'da)
   vehicle_limit integer not null default 1 check (vehicle_limit between 0 and 10000),
