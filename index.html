@@ -192,7 +192,7 @@
         <div class="expense-intro"><div><p class="eyebrow">TO‘LOVLAR</p><h2>To‘lov</h2><p>Qaysi davlatda, nima uchun va qancha to‘langanini yozing. Davlatni tanlasangiz, pul birligi o‘zi almashadi.</p></div><i class="fa-solid fa-money-check-dollar"></i></div>
         <article class="panel expense-card payment-card">
           <div class="section-heading"><div><h3>Yangi to‘lov</h3><p>Davlat, sabab va summani kiriting</p></div></div>
-          <form id="paymentForm" class="expense-form">
+          <div class="payment-left"><form id="paymentForm" class="expense-form">
             <label for="payCountry">Davlat</label><input id="payCountry" type="text" list="countryList" placeholder="Masalan: Qozog‘iston" required maxlength="60" autocomplete="off">
             <datalist id="countryList"><option value="O‘zbekiston"><option value="Qozog‘iston"><option value="Qirg‘iziston"><option value="Tojikiston"><option value="Turkmaniston"><option value="Rossiya"><option value="Xitoy"><option value="Turkiya"><option value="Eron"><option value="Afg‘oniston"><option value="Ozarbayjon"><option value="Gruziya"><option value="Armaniston"><option value="Belarus"><option value="Ukraina"><option value="Polsha"><option value="Germaniya"><option value="Litva"><option value="Latviya"><option value="Estoniya"><option value="Mongoliya"><option value="Pokiston"><option value="Hindiston"><option value="Janubiy Koreya"><option value="Yaponiya"><option value="BAA"><option value="Saudiya Arabistoni"><option value="AQSh"></datalist>
             <label for="payReason">Nima uchun to‘langan?</label><input id="payReason" type="text" placeholder="Masalan: bojxona, jarima, yo‘l to‘lovi..." required maxlength="200" autocomplete="off">
@@ -201,7 +201,7 @@
             <label for="payDate">Sana</label><input id="payDate" type="date" required>
             <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> To‘lovni saqlash</button>
           </form>
-          <p id="paySaved" class="expense-feedback"></p>
+          <p id="paySaved" class="expense-feedback"></p></div>
           <div id="paymentReport"></div>
         </article>
       </section>

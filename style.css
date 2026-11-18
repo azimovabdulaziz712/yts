@@ -206,3 +206,14 @@
 #adblueCard .smaska-title p{margin-bottom:6px}
 #adblueCard .expense-form{margin-top:10px}
 .login-owner-btn,.topbar .login-owner-btn{color:#fff!important}
+
+/* To'lov sahifasi: butun kenglik, forma chapda, tarix o'ngda */
+.payment-card{max-width:none!important;width:100%;display:grid;grid-template-columns:minmax(300px,400px) minmax(0,1fr);gap:0 28px;align-items:start}
+.payment-card>.section-heading{grid-column:1/-1}
+.payment-card #paymentReport{min-width:0}
+@media(max-width:980px){.payment-card{grid-template-columns:1fr}}
+/* Davlatlar kesimidagi hisobot */
+.country-block{margin:12px 0;padding:12px 14px;border:1px solid #e3eaf6;border-radius:12px;background:#fff}
+.country-block h4{margin:0 0 8px;font-size:15px}
+.country-table{width:100%;border-collapse:collapse;font-size:13px}.country-table td{padding:6px 8px;border-bottom:1px solid #eef2f9}.country-table td:last-child{text-align:right}
+.country-sub{margin-top:8px;font-weight:700;font-size:13px;color:#173c78}

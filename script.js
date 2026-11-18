@@ -621,7 +621,7 @@ document.getElementById('adblueForm')?.addEventListener('submit',async e=>{
   e.preventDefault();
   const place=document.getElementById('adbPlace').value.trim().slice(0,120),liters=Number(document.getElementById('adbLiters').value),end=document.getElementById('adbEnd').value;
   if(!place||!(liters>0)){document.getElementById('adbSaved').textContent='Litr va joyni yozing.';return;}
-  await storeMoney(e.target,'adbAmount','adbCurrency','adbDate','furaAdblueExpenses',()=>({place,liters,endDate:end}),'adbSaved');
+  await storeMoney(e.target,'adbAmount','adbCurrency','adbDate','furaAdblueExpenses',()=>({place,liters,endDate:end,country:(document.getElementById('adbCountry')?.value||'').trim().slice(0,60)}),'adbSaved');
   renderAdblue();
 });
 document.getElementById('adblueReport')?.addEventListener('click',e=>{
@@ -636,7 +636,7 @@ function renderAdblue(){
   if(!recs.length){box.innerHTML='<div class="empty-report">Hozircha Adblok yozuvi yo‘q.</div>';return;}
   const usd=recs.reduce((sum,x)=>sum+(Number(x.amountUsd)||0),0),lit=recs.reduce((sum,x)=>sum+(Number(x.liters)||0),0);
   const left=x=>{if(!x.endDate)return '';const d=Math.ceil((parseLocalDate(x.endDate)-new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()))/86400000);return d>=0?`${d} kun qoldi`:`${-d} kun oldin tugagan`};
-  const rows=recs.map(x=>`<tr><td>${escapeHtml(x.date||'')}</td><td>${escapeHtml(x.endDate||'—')}<span class="report-subline">${escapeHtml(left(x))}</span></td><td>${Number(x.liters).toLocaleString('uz-UZ')} litr</td><td>${escapeHtml(x.place||'—')}</td><td><strong>${escapeHtml(fmtMoney(x.amount,x.currency))}</strong><span class="report-subline">≈ ${escapeHtml(fmtMoney(x.amountUsd,'USD'))}</span></td><td><button type="button" class="report-btn adb-del" data-id="${escapeHtml(String(x.savedAt))}">O‘chirish</button></td></tr>`).join('');
+  const rows=recs.map(x=>`<tr><td>${escapeHtml(x.date||'')}</td><td>${escapeHtml(x.endDate||'—')}<span class="report-subline">${escapeHtml(left(x))}</span></td><td>${Number(x.liters).toLocaleString('uz-UZ')} litr</td><td>${escapeHtml([x.country,x.place].filter(Boolean).join(' · ')||'—')}</td><td><strong>${escapeHtml(fmtMoney(x.amount,x.currency))}</strong><span class="report-subline">≈ ${escapeHtml(fmtMoney(x.amountUsd,'USD'))}</span></td><td><button type="button" class="report-btn adb-del" data-id="${escapeHtml(String(x.savedAt))}">O‘chirish</button></td></tr>`).join('');
   box.innerHTML=`<div class="report-table-wrap"><table class="report-table"><thead><tr><th>Quyilgan</th><th>Tugaydi</th><th>Miqdor</th><th>Qayerda</th><th>Narxi</th><th></th></tr></thead><tbody>${rows}</tbody></table></div><div class="report-total">Jami: ${lit.toLocaleString('uz-UZ')} litr · $${usd.toFixed(2)}</div>`;
 }
 function renderPayments(){
@@ -647,6 +647,19 @@ function renderPayments(){
   const usd=recs.reduce((sum,x)=>sum+usdValue(x),0);
   const rows=recs.map(x=>`<tr><td><strong>${escapeHtml(x.country||'—')}</strong></td><td>${escapeHtml(x.reason||'—')}</td><td><strong>${escapeHtml(fmtMoney(x.amount,x.currency))}</strong><span class="report-subline">≈ ${escapeHtml(fmtMoney(x.amountUsd,'USD'))}</span></td><td>${escapeHtml(x.date||'')}</td><td><button type="button" class="report-btn pay-del" data-id="${escapeHtml(String(x.savedAt))}">O‘chirish</button></td></tr>`).join('');
   box.innerHTML=`<div class="report-table-wrap"><table class="report-table"><thead><tr><th>Davlat</th><th>Nima uchun</th><th>Summa</th><th>Sana</th><th></th></tr></thead><tbody>${rows}</tbody></table></div><div class="report-total">Valyutalar bo‘yicha: ${Object.entries(by).map(([c,v])=>escapeHtml(fmtMoney(v,c))).join(' · ')}<br>Jami dollarda: $${usd.toFixed(2)}</div>`;
+}
+const COUNTRY_BY_CUR={UZS:'O‘zbekiston',KZT:'Qozog‘iston',RUB:'Rossiya',CNY:'Xitoy',KGS:'Qirg‘iziston',TJS:'Tojikiston',TMT:'Turkmaniston',TRY:'Turkiya',AZN:'Ozarbayjon',GEL:'Gruziya',AMD:'Armaniston',BYN:'Belarus'};
+function countryOfRecord(x){const t=(x.country||'').trim();if(t)return t;const c=currencyForPlace(x.location||x.place||'');if(c&&COUNTRY_BY_CUR[c])return COUNTRY_BY_CUR[c];const cur=safeCur(x.currency);return COUNTRY_BY_CUR[cur]||'Boshqa davlat';}
+function groupByCountry(list){const g=new Map();list.forEach(x=>{const k=countryOfRecord(x),key=k.toLocaleLowerCase('uz-UZ');if(!g.has(key))g.set(key,{name:k,items:[]});g.get(key).items.push(x)});return [...g.values()]}
+function fuelByCountryHtml(diesel){
+  const head='<div class="overall-fuel-summary"><h3>⛽ Solyarka bo‘yicha jami (davlatlar kesimida)</h3>';
+  if(!diesel.length)return head+'<p class="garage-muted">Hozircha solyarka yozuvi yo‘q.</p></div>';
+  let tl=0,tu=0;
+  const blocks=groupByCountry(diesel).map(g=>{
+    const l=g.items.reduce((a,x)=>a+(Number(x.liters)||0),0),u=g.items.reduce((a,x)=>a+usdValue(x),0);tl+=l;tu+=u;
+    const rows=g.items.map(x=>{const lit=Number(x.liters)||0,usd=usdValue(x);return `<tr><td>${escapeHtml(x.location||'—')}</td><td>${lit.toLocaleString('uz-UZ')} L</td><td>${lit?(usd/lit).toFixed(2):'0'} $ dan</td><td><strong>$${usd.toFixed(2)}</strong></td></tr>`}).join('');
+    return `<div class="country-block"><h4>${escapeHtml(g.name)}</h4><table class="country-table"><tbody>${rows}</tbody></table><div class="country-sub">${escapeHtml(g.name)} bo‘yicha: ${l.toLocaleString('uz-UZ')} L · $${u.toFixed(2)}</div></div>`}).join('');
+  return head+blocks+`<div class="overall-fuel-stats"><div><span>Jami quyilgan solyarka</span><strong>${tl.toLocaleString('uz-UZ')} litr</strong></div><div><span>Solyarkaga jami xarajat</span><strong>$${tu.toFixed(2)}</strong></div></div></div>`;
 }
 function renderOverall(){
   const manual=readExpense('furaOverallExpenses');
@@ -666,8 +679,8 @@ function renderOverall(){
   const allExpenses=[...diesel,...platon,...salary,...china,...manual.filter(x=>x.category),...repairs.map(x=>({...x,amountUsd:Number(x.amount)||0,trip:x.trip||0}))];
   const grouped={};
   [...diesel,...cargo,...platon,...salary,...china,...manual,...repairs.map(x=>({...x,currency:'USD'}))].forEach(x=>{const c=x.currency||'USD';grouped[c]=(grouped[c]||0)+(Number(x.amount)||0)});
-  const liters=diesel.reduce((sum,x)=>sum+(Number(x.liters)||0),0), dieselUsd=diesel.reduce((sum,x)=>sum+usdValue(x),0);
-  document.getElementById('overallSummary').innerHTML=`<div class="overall-fuel-summary"><h3>⛽ Solyarka bo‘yicha jami</h3><div class="overall-fuel-stats"><div><span>Jami quyilgan solyarka</span><strong>${liters.toLocaleString('uz-UZ')} litr</strong></div><div><span>Solyarkaga jami to‘lov</span><strong>$${dieselUsd.toFixed(2)}</strong></div></div></div><h3>Asl valyutalar bo‘yicha sarflangan jami</h3><div class="overall-currency-totals">${Object.entries(grouped).map(([c,n])=>`<p><b>${escapeHtml(c)}:</b> ${n.toLocaleString('uz-UZ')}</p>`).join('')||'<p>Hozircha xarajat yo‘q.</p>'}</div>`;
+  const fuelHtml=fuelByCountryHtml(diesel);
+  document.getElementById('overallSummary').innerHTML=`${fuelHtml}<h3>Asl valyutalar bo‘yicha sarflangan jami</h3><div class="overall-currency-totals">${Object.entries(grouped).map(([c,n])=>`<p><b>${escapeHtml(c)}:</b> ${n.toLocaleString('uz-UZ')}</p>`).join('')||'<p>Hozircha xarajat yo‘q.</p>'}</div>`;
   // Har bir reys: yuk narxi daromad, qolgan saqlangan yozuvlar xarajat hisoblanadi.
   const tripIds=new Set();
   [...cargo,...diesel,...platon,...salary,...china,...manual,...repairs,...readExpense('furaPaymentExpenses')].forEach(x=>{const n=Number(x.trip||0);if(n>0)tripIds.add(n)});
@@ -883,7 +896,8 @@ document.getElementById('tripForm').addEventListener('submit',e=>{e.preventDefau
 
 // Remont xarajatlari: har bir xizmat narxi alohida saqlanadi.
 function readRepairCosts(){try{return JSON.parse(getTruckValue('repairCosts')||'[]')}catch(e){return []}}
-function addRepairCost(name,amount,date,details=''){const price=Number(amount)||0;const list=readRepairCosts();list.unshift({name,amount:price,date:date||dateToLocalInput(new Date()),details,trip:Number(getTruckValue('currentReysNo')||1),savedAt:new Date().toISOString()});setTruckValue('repairCosts',JSON.stringify(list));}
+function repairWhere(p){const g=id=>(document.getElementById(id)?.value||'').trim().slice(0,120);return {country:g(p+'RepCountry'),place:g(p+'RepPlace')}}
+function addRepairCost(name,amount,date,details='',where={}){const price=Number(amount)||0;const list=readRepairCosts();list.unshift({name,amount:price,date:date||dateToLocalInput(new Date()),details,country:where.country||'',place:where.place||'',trip:Number(getTruckValue('currentReysNo')||1),savedAt:new Date().toISOString()});setTruckValue('repairCosts',JSON.stringify(list));}
 function setRepairCostInputs(){
   ['aftolMasloFilter','aftolSolyarkaFilter','aftolStistolniy'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.value=getTruckValue(id)??['18','22','14'][i]});
   const today=dateToLocalInput(new Date());
@@ -898,11 +912,11 @@ function setRepairCostInputs(){
   renderAftol();
 }
 function renderAftol(){const date=getTruckValue('aftolChangedDate'),days=Number(getTruckValue('aftolDurationDays')),card=document.getElementById('aftolCard');if(!card)return;card.classList.remove('warning','danger');const changed=document.getElementById('aftolChanged'),dueEl=document.getElementById('aftolDue'),remaining=document.getElementById('aftolRemaining'),badge=document.getElementById('aftolBadge');if(!date||!days){changed.textContent=date||'—';dueEl.textContent='—';remaining.textContent='Muddatni kiriting';badge.textContent='Sozlanmagan';return}const due=parseLocalDate(date);due.setDate(due.getDate()+days);const today=new Date();today.setHours(0,0,0,0);const left=Math.ceil((due-today)/86400000);changed.textContent=date;dueEl.textContent=dateToLocalInput(due);remaining.textContent=left<0?`${Math.abs(left)} kun o‘tgan`:left===0?'Bugun tugaydi':`${left} kun`;badge.textContent=left<=0?'Almashtirish kerak':`${days} kunlik`;if(left<=0)card.classList.add('danger');else if(left<=3)card.classList.add('warning')}
-document.getElementById('aftolForm')?.addEventListener('submit',e=>{e.preventDefault();const date=document.getElementById('aftolDate').value,days=Number(document.getElementById('aftolDays').value),price=Number(document.getElementById('aftolPrice').value);if(!date||days<1)return;const extras=[['aftolMasloFilter','Maslo filter'],['aftolSolyarkaFilter','Solyarka filter'],['aftolStistolniy','Stistolniy']].map(([id,n])=>{const v=document.getElementById(id).value;setTruckValue(id,v);return `${n} ${v} $`});const fullPrice=price+['aftolMasloFilter','aftolSolyarkaFilter','aftolStistolniy'].reduce((a,id)=>a+(Number(document.getElementById(id).value)||0),0);const oldDate=getTruckValue('aftolChangedDate');if(oldDate!==date||getTruckValue('aftolDurationDays')!==String(days))addRepairCost('Aftol',fullPrice,date,`Aftol: ${price} $; ${extras.join('; ')}`);setTruckValue('aftolChangedDate',date);setTruckValue('aftolDurationDays',String(days));setTruckValue('aftolPrice',String(price));renderAftol();alert('Aftol ma’lumotlari saqlandi.')});
-document.getElementById('oilResetBtn')?.addEventListener('click',()=>{const oilPrice=Number(document.getElementById('oilPrice').value)||0,servicePrice=Number(document.getElementById('oilServicePrice').value)||0,price=oilPrice+servicePrice,description=document.getElementById('oilDescription').value;setTruckValue('oilPrice',String(oilPrice));setTruckValue('oilServicePrice',String(servicePrice));setTruckValue('oilDescription',description);addRepairCost('Moy',price,dateToLocalInput(new Date()),`${description}; Kastrol moyi: ${oilPrice} $; almashtirish xizmati: ${servicePrice} $`);});
-document.getElementById('smaskaForm')?.addEventListener('submit',()=>{setTruckValue('smaskaPrice',document.getElementById('smaskaPrice').value);addRepairCost('Smaska',document.getElementById('smaskaPrice').value,document.getElementById('smaskaDate').value)});
-document.getElementById('kalodForm')?.addEventListener('submit',()=>{setTruckValue('kalodPrice',document.getElementById('kalodPrice').value);addRepairCost('Kalodka',document.getElementById('kalodPrice').value,document.getElementById('kalodDate').value)});
-document.getElementById('repairExpenseBtn')?.addEventListener('click',()=>{const box=document.getElementById('repairExpenseReport'),items=readRepairCosts();const total=items.reduce((sum,x)=>sum+(Number(x.amount)||0),0);box.classList.remove('hidden');box.innerHTML=items.length?`<div class="report-table-wrap"><table class="report-table"><thead><tr><th>Remont turi</th><th>Narxi</th><th>Sana</th><th>Izoh</th></tr></thead><tbody>${items.map(x=>`<tr><td>${escapeHtml(x.name)}</td><td>${fmtMoney(x.amount,'USD')}</td><td>${escapeHtml(x.date||'—')}</td><td>${escapeHtml(x.details||'—')}</td></tr>`).join('')}</tbody></table></div><div class="report-total">Remontning umumiy xarajati: ${fmtMoney(total,'USD')}</div>`:'<div class="empty-report">Hozircha remont xarajati qayd etilmagan. Moyni almashtirish yoki xizmat muddatini saqlashda narxlarni kiriting.</div>';box.scrollIntoView({behavior:'smooth',block:'nearest'})});
+document.getElementById('aftolForm')?.addEventListener('submit',e=>{e.preventDefault();const date=document.getElementById('aftolDate').value,days=Number(document.getElementById('aftolDays').value),price=Number(document.getElementById('aftolPrice').value);if(!date||days<1)return;const extras=[['aftolMasloFilter','Maslo filter'],['aftolSolyarkaFilter','Solyarka filter'],['aftolStistolniy','Stistolniy']].map(([id,n])=>{const v=document.getElementById(id).value;setTruckValue(id,v);return `${n} ${v} $`});const fullPrice=price+['aftolMasloFilter','aftolSolyarkaFilter','aftolStistolniy'].reduce((a,id)=>a+(Number(document.getElementById(id).value)||0),0);const oldDate=getTruckValue('aftolChangedDate');if(oldDate!==date||getTruckValue('aftolDurationDays')!==String(days))addRepairCost('Aftol',fullPrice,date,`Aftol: ${price} $; ${extras.join('; ')}`,repairWhere('aftol'));setTruckValue('aftolChangedDate',date);setTruckValue('aftolDurationDays',String(days));setTruckValue('aftolPrice',String(price));renderAftol();alert('Aftol ma’lumotlari saqlandi.')});
+document.getElementById('oilResetBtn')?.addEventListener('click',()=>{const oilPrice=Number(document.getElementById('oilPrice').value)||0,servicePrice=Number(document.getElementById('oilServicePrice').value)||0,price=oilPrice+servicePrice,description=document.getElementById('oilDescription').value;setTruckValue('oilPrice',String(oilPrice));setTruckValue('oilServicePrice',String(servicePrice));setTruckValue('oilDescription',description);addRepairCost('Moy',price,dateToLocalInput(new Date()),`${description}; Kastrol moyi: ${oilPrice} $; almashtirish xizmati: ${servicePrice} $`,repairWhere('oil'));});
+document.getElementById('smaskaForm')?.addEventListener('submit',()=>{setTruckValue('smaskaPrice',document.getElementById('smaskaPrice').value);addRepairCost('Smaska',document.getElementById('smaskaPrice').value,document.getElementById('smaskaDate').value,'',repairWhere('smaska'))});
+document.getElementById('kalodForm')?.addEventListener('submit',()=>{setTruckValue('kalodPrice',document.getElementById('kalodPrice').value);addRepairCost('Kalodka',document.getElementById('kalodPrice').value,document.getElementById('kalodDate').value,'',repairWhere('kalod'))});
+document.getElementById('repairExpenseBtn')?.addEventListener('click',()=>{const box=document.getElementById('repairExpenseReport'),items=readRepairCosts();const total=items.reduce((sum,x)=>sum+(Number(x.amount)||0),0);box.classList.remove('hidden');box.innerHTML=items.length?`<div class="report-table-wrap"><table class="report-table"><thead><tr><th>Remont turi</th><th>Narxi</th><th>Sana</th><th>Izoh</th><th>Qayerda almashtirildi</th></tr></thead><tbody>${items.map(x=>`<tr><td>${escapeHtml(x.name)}</td><td>${fmtMoney(x.amount,'USD')}</td><td>${escapeHtml(x.date||'—')}</td><td>${escapeHtml(x.details||'—')}</td><td><strong>${escapeHtml([x.country,x.place].filter(Boolean).join(' · ')||'—')}</strong></td></tr>`).join('')}</tbody></table></div><div class="report-total">Remontning umumiy xarajati: ${fmtMoney(total,'USD')}</div>`:'<div class="empty-report">Hozircha remont xarajati qayd etilmagan. Moyni almashtirish yoki xizmat muddatini saqlashda narxlarni kiriting.</div>';box.scrollIntoView({behavior:'smooth',block:'nearest'})});
 setRepairCostInputs();
 
 // Shafyor oyligi va qo‘shimcha manzillar
@@ -968,4 +982,13 @@ let salaryRouteCount=1;document.getElementById('addSalaryRoute')?.addEventListen
     const lang=selector.value; const t=translations[lang]||translations.uz;
     if(t[el.dataset.view]) document.getElementById('pageTitle').textContent=t[el.dataset.view];
   }));
+})();
+
+
+// Remont boxlariga: davlat va jihoz qayerga o‘rnatilgani
+(function addRepairWhereInputs(){
+  const block=p=>`<label for="${p}RepCountry">Qaysi davlatda?</label><input id="${p}RepCountry" type="text" list="countryList" placeholder="Masalan: Rossiya" maxlength="60" autocomplete="off"><label for="${p}RepPlace">Qayerga o‘rnatildi / qo‘yildi?</label><input id="${p}RepPlace" type="text" placeholder="Masalan: old g‘ildirak, Moskva servis" maxlength="120" autocomplete="off">`;
+  [['kalodForm','kalod'],['aftolForm','aftol'],['smaskaForm','smaska']].forEach(([f,p])=>{const form=document.getElementById(f);const btn=form&&form.querySelector('button[type="submit"],button:not([type])');if(btn)btn.insertAdjacentHTML('beforebegin',block(p))});
+  const oilBtn=document.getElementById('oilResetBtn');if(oilBtn)oilBtn.insertAdjacentHTML('beforebegin',block('oil'));
+  const adbPlace=document.getElementById('adbPlace');if(adbPlace){const lab=document.querySelector('label[for="adbPlace"]');lab?.insertAdjacentHTML('beforebegin','<label for="adbCountry">Qaysi davlatda?</label><input id="adbCountry" type="text" list="countryList" placeholder="Masalan: Rossiya" maxlength="60" autocomplete="off">')}
 })();
